@@ -1,0 +1,11 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Python
+__pycache__/
+*.pyc
+
+# Temporales y respaldos
+*.tmp
+*.bak

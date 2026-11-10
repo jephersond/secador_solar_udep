@@ -1,0 +1,6502 @@
+{
+  "version": 1,
+  "fuente": "Secador_UDEP_3D_interfaz_nueva_v3.html",
+  "generado_con": "three.js r128 (el mismo embebido en el HTML) + GLTFExporter r128, en Node.js",
+  "unidades": "metros",
+  "ejes": "Y arriba; Puerta 1 al norte (−Z); Puerta 2 y extractores al sur (+Z); X: oeste (−X) a este (+X)",
+  "como_rearmar": "Crear un grupo \"DRY\" con rotation.y = grupos.secador.rotacion_y_rad y colgar ahí todas las piezas con pertenece_a=\"secador\" (cada una con su posición/rotación/escala). Las piezas con pertenece_a=\"entorno\" van directo en la escena, sin giro.",
+  "grupos": {
+    "secador": {
+      "rotacion_y_rad": 1.5708,
+      "rotacion_y_grados": 90,
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "nota": "En el visor todo el secador se gira 90° (DRY_ROT = π/2) para que la Puerta 2 mire al invernadero (+X). Las piezas están exportadas SIN ese giro, en el marco del plano (Puerta 1 en −Z)."
+    },
+    "entorno": {
+      "rotacion_y_rad": 0,
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "escala": [
+        1,
+        1,
+        1
+      ]
+    }
+  },
+  "dimensiones_del_codigo": {
+    "largo_m": 5.79,
+    "ancho_m": 4.924,
+    "alto_m": 3.034,
+    "altura_muros_m": 1.9,
+    "piso_m": [
+      6.93,
+      0.15,
+      7.79
+    ],
+    "caja_envolvente_secador_sin_piso": {
+      "min": [
+        -2.4755,
+        -0.014,
+        -2.912
+      ],
+      "max": [
+        2.4755,
+        3.0487,
+        3.095
+      ]
+    }
+  },
+  "bandejas": [
+    {
+      "bandeja": "B1",
+      "sondaId": 6,
+      "x": -1.48,
+      "z": -1.91,
+      "y_malla": 1.025,
+      "archivo": "bandeja_B1.glb",
+      "nodo_malla": "B1_malla",
+      "lado": "oeste (−X)",
+      "cercania": "Puerta 1"
+    },
+    {
+      "bandeja": "B2",
+      "sondaId": 5,
+      "x": -1.48,
+      "z": 0,
+      "y_malla": 1.025,
+      "archivo": "bandeja_B2.glb",
+      "nodo_malla": "B2_malla",
+      "lado": "oeste (−X)",
+      "cercania": "centro"
+    },
+    {
+      "bandeja": "B3",
+      "sondaId": 4,
+      "x": -1.48,
+      "z": 1.91,
+      "y_malla": 1.025,
+      "archivo": "bandeja_B3.glb",
+      "nodo_malla": "B3_malla",
+      "lado": "oeste (−X)",
+      "cercania": "extractores / Puerta 2"
+    },
+    {
+      "bandeja": "B4",
+      "sondaId": 7,
+      "x": 1.48,
+      "z": 1.91,
+      "y_malla": 1.025,
+      "archivo": "bandeja_B4.glb",
+      "nodo_malla": "B4_malla",
+      "lado": "este (+X)",
+      "cercania": "extractores / Puerta 2"
+    },
+    {
+      "bandeja": "B5",
+      "sondaId": 8,
+      "x": 1.48,
+      "z": 0,
+      "y_malla": 1.025,
+      "archivo": "bandeja_B5.glb",
+      "nodo_malla": "B5_malla",
+      "lado": "este (+X)",
+      "cercania": "centro"
+    },
+    {
+      "bandeja": "B6",
+      "sondaId": 9,
+      "x": 1.48,
+      "z": -1.91,
+      "y_malla": 1.025,
+      "archivo": "bandeja_B6.glb",
+      "nodo_malla": "B6_malla",
+      "lado": "este (+X)",
+      "cercania": "Puerta 1"
+    }
+  ],
+  "luces_y_ambiente": {
+    "nota": "No se exportan: luz hemisférica (0xffffff/0xa89878, 0.5), luz direccional (0xfff1d6, 0.85, sombra 2048), niebla Fog(0xe9dcc3, 50, 125), cielo y neblina (shaders). Se siguen creando por código en el HTML.",
+    "direccion_sol": [
+      0.5501,
+      0.4701,
+      -0.6902
+    ]
+  },
+  "no_exportado": [
+    {
+      "name": "Mesh",
+      "type": "Mesh",
+      "why": "ShaderMaterial (cielo/neblina): glTF no soporta shaders GLSL propios"
+    },
+    {
+      "name": "Mesh",
+      "type": "Mesh",
+      "why": "ShaderMaterial (cielo/neblina): glTF no soporta shaders GLSL propios"
+    },
+    {
+      "name": "Rótulos (sprites ID2, ID4…, PUERTA 1/2, 4 EXTRACTORES)",
+      "count": 12,
+      "why": "UI del visor (CanvasTexture con texto). Se reconstruyen por código al cargar."
+    }
+  ],
+  "notas_exportacion": [
+    "Materiales: el visor usa MeshLambertMaterial (difuso puro). Se exportan como PBR equivalente: rugosidad 1, metálico 0, mismo color, opacidad, lados y textura. Si no se hiciera, GLTFExporter r128 les pondría rugosidad/metálico 0,5.",
+    "Colores: se guardan los mismos valores RGB que usa el visor (r128 sin conversión sRGB). Cargados en el mismo visor se ven igual; Blender los interpreta como lineales y los mostrará algo más claros: es solo visualización, el dato es el mismo.",
+    "Texturas: son procedurales (canvas) y quedan incrustadas como PNG dentro del .glb. Concreto, arena y huellas usan Math.random en el visor, así que cada carga del HTML genera una variante distinta; el .glb guarda una de ellas.",
+    "Repetición de textura: glTF base no tiene \"repeat\". Se horneó en las UV (concreto ×2, arena ×100); la textura queda con wrap = REPEAT.",
+    "Hojas de árbol: el visor usa map + alphaMap (el exportador no soporta alphaMap). Se fusionaron en una sola textura con el canal alfa y alphaMode=MASK, corte 0,3.",
+    "Colores por vértice del terreno: 587 valores de 12675 superaban 1,0 (máx. 1,062) y se recortaron a 1,0, porque glTF exige [0,1]. Efecto: ≤6 % de brillo en una minoría de vértices.",
+    "Sondas: se exportan en blanco (0xffffff). El visor las colorea por temperatura en tiempo real (m.material.color = col(T)).",
+    "Edificios: las aristas (LineSegments) se exportan como líneas; Blender puede ignorarlas al importar.",
+    "Bandejas: las dos \"filas\" del código son dos columnas a la misma altura (x = ±1,48 m, malla a y = 1,025 m); no están apiladas.",
+    "El código NO usa Object3D.name; usa userData ({kind,id,n,key}). Se asignaron nombres nuevos y se conservó userData como \"extras\" del glTF; al cargar con GLTFLoader reaparece en object.userData."
+  ],
+  "partes_bandeja": {
+    "L": "patas",
+    "U": "travesanos",
+    "S": "angulos",
+    "P": "marco",
+    "M": "malla_grupo",
+    "B": "borde",
+    "nota": "Clave del arreglo parts[k] del visor → sufijo del nodo B{n}_<sufijo>. Cada grupo conserva userData.tn = número de bandeja."
+  },
+  "piezas": [
+    {
+      "nombre": "Estructura_tubos",
+      "archivo": "estructura_tubos.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Tubos de la estructura: 4 arcos, largueros, dinteles y jambas de los testeros (CylinderGeometry de 6 lados)",
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -2.4755,
+          -0.014,
+          -2.912
+        ],
+        "max": [
+          2.4755,
+          3.0487,
+          2.912
+        ]
+      },
+      "mallas": 137,
+      "triangulos": 3288,
+      "bytes": 347356,
+      "hijos": [
+        {
+          "nombre": "Testero_norte_dintel",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            1.9,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.5708
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Testero_norte_jamba_oeste",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.7,
+            0.95,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Testero_norte_travesano_malla_oeste",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.4742,
+            0.5,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.5708
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Testero_norte_jamba_este",
+          "tipo": "Mesh",
+          "posicion": [
+            0.7,
+            0.95,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Testero_norte_travesano_malla_este",
+          "tipo": "Mesh",
+          "posicion": [
+            1.4742,
+            0.5,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            1.5708
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Testero_sur_dintel",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            1.9,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.5708
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Testero_sur_jamba_oeste",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.7,
+            0.95,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Testero_sur_travesano_malla_oeste",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.4742,
+            0.5,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.5708
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Testero_sur_jamba_este",
+          "tipo": "Mesh",
+          "posicion": [
+            0.7,
+            0.95,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Testero_sur_travesano_malla_este",
+          "tipo": "Mesh",
+          "posicion": [
+            1.4742,
+            0.5,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            1.5708
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg01",
+          "tipo": "Mesh",
+          "posicion": [
+            -2.056,
+            0.95,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.4039
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg02",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.6197,
+            1.9697,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.4095
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg03",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.5533,
+            2.1063,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.4956
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg04",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.4755,
+            2.2366,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.5816
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg05",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.3867,
+            2.3598,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.6676
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg06",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.2876,
+            2.4749,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.7536
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg07",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.1791,
+            2.581,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.8396
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg08",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.0618,
+            2.6775,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.9257
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg09",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.9366,
+            2.7635,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.0117
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg10",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.8046,
+            2.8384,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.0977
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg11",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.6666,
+            2.9017,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.1837
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg12",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.5236,
+            2.9529,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.2697
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg13",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.3768,
+            2.9917,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.3557
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg14",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.2272,
+            3.0177,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.4418
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg15",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.0759,
+            3.0307,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.5278
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg16",
+          "tipo": "Mesh",
+          "posicion": [
+            0.0759,
+            3.0307,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.6138
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg17",
+          "tipo": "Mesh",
+          "posicion": [
+            0.2272,
+            3.0177,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.6998
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg18",
+          "tipo": "Mesh",
+          "posicion": [
+            0.3768,
+            2.9917,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.7858
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg19",
+          "tipo": "Mesh",
+          "posicion": [
+            0.5236,
+            2.9529,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.8719
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg20",
+          "tipo": "Mesh",
+          "posicion": [
+            0.6666,
+            2.9017,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.9579
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg21",
+          "tipo": "Mesh",
+          "posicion": [
+            0.8046,
+            2.8384,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -2.0439
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg22",
+          "tipo": "Mesh",
+          "posicion": [
+            0.9366,
+            2.7635,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -2.1299
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg23",
+          "tipo": "Mesh",
+          "posicion": [
+            1.0618,
+            2.6775,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -2.2159
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg24",
+          "tipo": "Mesh",
+          "posicion": [
+            1.1791,
+            2.581,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -2.302
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg25",
+          "tipo": "Mesh",
+          "posicion": [
+            1.2876,
+            2.4749,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -2.388
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg26",
+          "tipo": "Mesh",
+          "posicion": [
+            1.3867,
+            2.3598,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -2.474
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg27",
+          "tipo": "Mesh",
+          "posicion": [
+            1.4755,
+            2.2366,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -2.56
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg28",
+          "tipo": "Mesh",
+          "posicion": [
+            1.5533,
+            2.1063,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -2.646
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg29",
+          "tipo": "Mesh",
+          "posicion": [
+            1.6197,
+            1.9697,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -2.7321
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_1_seg30",
+          "tipo": "Mesh",
+          "posicion": [
+            2.056,
+            0.95,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -2.7377
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg01",
+          "tipo": "Mesh",
+          "posicion": [
+            -2.056,
+            0.95,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.4039
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg02",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.6197,
+            1.9697,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.4095
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg03",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.5533,
+            2.1063,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.4956
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg04",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.4755,
+            2.2366,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.5816
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg05",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.3867,
+            2.3598,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.6676
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg06",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.2876,
+            2.4749,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.7536
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg07",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.1791,
+            2.581,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.8396
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg08",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.0618,
+            2.6775,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -0.9257
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg09",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.9366,
+            2.7635,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.0117
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg10",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.8046,
+            2.8384,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.0977
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg11",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.6666,
+            2.9017,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.1837
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg12",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.5236,
+            2.9529,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.2697
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg13",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.3768,
+            2.9917,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.3557
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg14",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.2272,
+            3.0177,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.4418
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg15",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.0759,
+            3.0307,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.5278
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg16",
+          "tipo": "Mesh",
+          "posicion": [
+            0.0759,
+            3.0307,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.6138
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg17",
+          "tipo": "Mesh",
+          "posicion": [
+            0.2272,
+            3.0177,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.6998
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg18",
+          "tipo": "Mesh",
+          "posicion": [
+            0.3768,
+            2.9917,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.7858
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg19",
+          "tipo": "Mesh",
+          "posicion": [
+            0.5236,
+            2.9529,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.8719
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arco_2_seg20",
+          "tipo": "Mesh",
+          "posicion": [
+            0.6666,
+            2.9017,
+            -0.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            -1.9579
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "hijos_total": 137,
+      "materiales": [
+        {
+          "name": "mat_1e2329",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#1e2329",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "Cubierta_policarbonato",
+      "archivo": "cubierta_policarbonato.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Piel translúcida del arco y de los 2 testeros (con hueco de puerta)",
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -2.462,
+          0,
+          -2.895
+        ],
+        "max": [
+          2.462,
+          3.034,
+          2.895
+        ]
+      },
+      "mallas": 3,
+      "triangulos": 130,
+      "bytes": 7728,
+      "hijos": [
+        {
+          "nombre": "Cubierta_policarbonato_arco",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Cubierta_testero_norte_Puerta1",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            0,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Cubierta_testero_sur_Puerta2",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            0,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "hijos_total": 3,
+      "materiales": [
+        {
+          "name": "mat_e8f0f3_a20",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#e8f0f3",
+          "opacidad": 0.2,
+          "transparente": true,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "Mallas_laterales",
+      "archivo": "mallas_laterales.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Mallas inferiores de 500 mm (laterales y testeros)",
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -2.462,
+          0,
+          -2.895
+        ],
+        "max": [
+          2.462,
+          0.5,
+          2.895
+        ]
+      },
+      "mallas": 6,
+      "triangulos": 12,
+      "bytes": 6400,
+      "hijos": [
+        {
+          "nombre": "Malla_lateral_oeste",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Malla_lateral_este",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Malla_testero_norte_oeste",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            0,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Malla_testero_norte_este",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            0,
+            -2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Malla_testero_sur_oeste",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            0,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Malla_testero_sur_este",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            0,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "hijos_total": 6,
+      "materiales": [
+        {
+          "name": "mat_222a33_a75",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#222a33",
+          "opacidad": 0.75,
+          "transparente": true,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "Piso",
+      "archivo": "piso_concreto.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Losa de concreto 6,93 × 0,15 × 7,79 m con textura procedural (canvas) incrustada",
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -3.465,
+          -0.15,
+          -3.895
+        ],
+        "max": [
+          3.465,
+          0,
+          3.895
+        ]
+      },
+      "mallas": 1,
+      "triangulos": 12,
+      "bytes": 112856,
+      "hijos": [
+        {
+          "nombre": "Piso_concreto",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            -0.075,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "uvRepeatHorneado": [
+              2,
+              2
+            ]
+          }
+        }
+      ],
+      "hijos_total": 1,
+      "materiales": [
+        {
+          "name": "mat_ffffff_tex",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#ffffff",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": {
+            "incrustada": true,
+            "tamano": "512x512"
+          }
+        }
+      ]
+    },
+    {
+      "nombre": "B1",
+      "archivo": "bandeja_B1.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Bandeja B1 (sonda ID6): patas, travesaños, ángulos, marco, borde y malla superior",
+      "posicion": [
+        -1.48,
+        0,
+        -1.91
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -1.98,
+          0,
+          -2.865
+        ],
+        "max": [
+          -0.98,
+          1.065,
+          -0.955
+        ]
+      },
+      "mallas": 25,
+      "triangulos": 300,
+      "bytes": 46392,
+      "userData": {
+        "kind": "tray_assembly",
+        "n": 1,
+        "sensorId": 6
+      },
+      "hijos": [
+        {
+          "nombre": "B1_patas",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 1
+          }
+        },
+        {
+          "nombre": "B1_travesanos",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 1
+          }
+        },
+        {
+          "nombre": "B1_angulos",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 1
+          }
+        },
+        {
+          "nombre": "B1_marco",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 1
+          }
+        },
+        {
+          "nombre": "B1_malla_grupo",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 1
+          }
+        },
+        {
+          "nombre": "B1_borde",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 1
+          }
+        }
+      ],
+      "hijos_total": 6,
+      "materiales": [
+        {
+          "name": "mat_2a3037",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#2a3037",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_1f242a",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#1f242a",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_cccccc_a90",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#cccccc",
+          "opacidad": 0.9,
+          "transparente": true,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "B2",
+      "archivo": "bandeja_B2.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Bandeja B2 (sonda ID5): patas, travesaños, ángulos, marco, borde y malla superior",
+      "posicion": [
+        -1.48,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -1.98,
+          0,
+          -0.955
+        ],
+        "max": [
+          -0.98,
+          1.065,
+          0.955
+        ]
+      },
+      "mallas": 25,
+      "triangulos": 300,
+      "bytes": 46236,
+      "userData": {
+        "kind": "tray_assembly",
+        "n": 2,
+        "sensorId": 5
+      },
+      "hijos": [
+        {
+          "nombre": "B2_patas",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 2
+          }
+        },
+        {
+          "nombre": "B2_travesanos",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 2
+          }
+        },
+        {
+          "nombre": "B2_angulos",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 2
+          }
+        },
+        {
+          "nombre": "B2_marco",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 2
+          }
+        },
+        {
+          "nombre": "B2_malla_grupo",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 2
+          }
+        },
+        {
+          "nombre": "B2_borde",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 2
+          }
+        }
+      ],
+      "hijos_total": 6,
+      "materiales": [
+        {
+          "name": "mat_2a3037",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#2a3037",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_1f242a",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#1f242a",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_cccccc_a90_2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#cccccc",
+          "opacidad": 0.9,
+          "transparente": true,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "B3",
+      "archivo": "bandeja_B3.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Bandeja B3 (sonda ID4): patas, travesaños, ángulos, marco, borde y malla superior",
+      "posicion": [
+        -1.48,
+        0,
+        1.91
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -1.98,
+          0,
+          0.955
+        ],
+        "max": [
+          -0.98,
+          1.065,
+          2.865
+        ]
+      },
+      "mallas": 25,
+      "triangulos": 300,
+      "bytes": 46376,
+      "userData": {
+        "kind": "tray_assembly",
+        "n": 3,
+        "sensorId": 4
+      },
+      "hijos": [
+        {
+          "nombre": "B3_patas",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 3
+          }
+        },
+        {
+          "nombre": "B3_travesanos",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 3
+          }
+        },
+        {
+          "nombre": "B3_angulos",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 3
+          }
+        },
+        {
+          "nombre": "B3_marco",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 3
+          }
+        },
+        {
+          "nombre": "B3_malla_grupo",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 3
+          }
+        },
+        {
+          "nombre": "B3_borde",
+          "tipo": "Group",
+          "posicion": [
+            1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 3
+          }
+        }
+      ],
+      "hijos_total": 6,
+      "materiales": [
+        {
+          "name": "mat_2a3037",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#2a3037",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_1f242a",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#1f242a",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_cccccc_a90_3",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#cccccc",
+          "opacidad": 0.9,
+          "transparente": true,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "B4",
+      "archivo": "bandeja_B4.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Bandeja B4 (sonda ID7): patas, travesaños, ángulos, marco, borde y malla superior",
+      "posicion": [
+        1.48,
+        0,
+        1.91
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          0.98,
+          0,
+          0.955
+        ],
+        "max": [
+          1.98,
+          1.065,
+          2.865
+        ]
+      },
+      "mallas": 25,
+      "triangulos": 300,
+      "bytes": 46356,
+      "userData": {
+        "kind": "tray_assembly",
+        "n": 4,
+        "sensorId": 7
+      },
+      "hijos": [
+        {
+          "nombre": "B4_patas",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 4
+          }
+        },
+        {
+          "nombre": "B4_travesanos",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 4
+          }
+        },
+        {
+          "nombre": "B4_angulos",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 4
+          }
+        },
+        {
+          "nombre": "B4_marco",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 4
+          }
+        },
+        {
+          "nombre": "B4_malla_grupo",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 4
+          }
+        },
+        {
+          "nombre": "B4_borde",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 4
+          }
+        }
+      ],
+      "hijos_total": 6,
+      "materiales": [
+        {
+          "name": "mat_2a3037",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#2a3037",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_1f242a",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#1f242a",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_cccccc_a90_4",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#cccccc",
+          "opacidad": 0.9,
+          "transparente": true,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "B5",
+      "archivo": "bandeja_B5.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Bandeja B5 (sonda ID8): patas, travesaños, ángulos, marco, borde y malla superior",
+      "posicion": [
+        1.48,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          0.98,
+          0,
+          -0.955
+        ],
+        "max": [
+          1.98,
+          1.065,
+          0.955
+        ]
+      },
+      "mallas": 25,
+      "triangulos": 300,
+      "bytes": 46216,
+      "userData": {
+        "kind": "tray_assembly",
+        "n": 5,
+        "sensorId": 8
+      },
+      "hijos": [
+        {
+          "nombre": "B5_patas",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 5
+          }
+        },
+        {
+          "nombre": "B5_travesanos",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 5
+          }
+        },
+        {
+          "nombre": "B5_angulos",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 5
+          }
+        },
+        {
+          "nombre": "B5_marco",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 5
+          }
+        },
+        {
+          "nombre": "B5_malla_grupo",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 5
+          }
+        },
+        {
+          "nombre": "B5_borde",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 5
+          }
+        }
+      ],
+      "hijos_total": 6,
+      "materiales": [
+        {
+          "name": "mat_2a3037",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#2a3037",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_1f242a",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#1f242a",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_cccccc_a90_5",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#cccccc",
+          "opacidad": 0.9,
+          "transparente": true,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "B6",
+      "archivo": "bandeja_B6.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Bandeja B6 (sonda ID9): patas, travesaños, ángulos, marco, borde y malla superior",
+      "posicion": [
+        1.48,
+        0,
+        -1.91
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          0.98,
+          0,
+          -2.865
+        ],
+        "max": [
+          1.98,
+          1.065,
+          -0.955
+        ]
+      },
+      "mallas": 25,
+      "triangulos": 300,
+      "bytes": 46376,
+      "userData": {
+        "kind": "tray_assembly",
+        "n": 6,
+        "sensorId": 9
+      },
+      "hijos": [
+        {
+          "nombre": "B6_patas",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 6
+          }
+        },
+        {
+          "nombre": "B6_travesanos",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 6
+          }
+        },
+        {
+          "nombre": "B6_angulos",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 6
+          }
+        },
+        {
+          "nombre": "B6_marco",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 6
+          }
+        },
+        {
+          "nombre": "B6_malla_grupo",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 6
+          }
+        },
+        {
+          "nombre": "B6_borde",
+          "tipo": "Group",
+          "posicion": [
+            -1.48,
+            0,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "tn": 6
+          }
+        }
+      ],
+      "hijos_total": 6,
+      "materiales": [
+        {
+          "name": "mat_2a3037",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#2a3037",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_1f242a",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#1f242a",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_cccccc_a90_6",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#cccccc",
+          "opacidad": 0.9,
+          "transparente": true,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "Puerta1",
+      "archivo": "puerta_1.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Puerta 1 de dos hojas (694 × 1892 mm); el origen de cada hoja está en su bisagra",
+      "posicion": [
+        0,
+        0,
+        -2.895
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -0.697,
+          0.005,
+          -2.91
+        ],
+        "max": [
+          0.697,
+          1.897,
+          -2.88
+        ]
+      },
+      "mallas": 14,
+      "triangulos": 168,
+      "bytes": 26792,
+      "userData": {
+        "kind": "door_assembly",
+        "key": "p1"
+      },
+      "hijos": [
+        {
+          "nombre": "Puerta1_hoja_L",
+          "tipo": "Group",
+          "posicion": [
+            -0.697,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "door",
+            "key": "p1"
+          }
+        },
+        {
+          "nombre": "Puerta1_hoja_R",
+          "tipo": "Group",
+          "posicion": [
+            0.697,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "door",
+            "key": "p1"
+          }
+        }
+      ],
+      "hijos_total": 2,
+      "materiales": [
+        {
+          "name": "mat_2b333c",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#2b333c",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_a38",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 0.38,
+          "transparente": true,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_2b333c_2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#2b333c",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_a38_2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 0.38,
+          "transparente": true,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "Puerta2",
+      "archivo": "puerta_2.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Puerta 2 de dos hojas (694 × 1892 mm); el origen de cada hoja está en su bisagra",
+      "posicion": [
+        0,
+        0,
+        2.895
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -0.697,
+          0.005,
+          2.88
+        ],
+        "max": [
+          0.697,
+          1.897,
+          2.91
+        ]
+      },
+      "mallas": 14,
+      "triangulos": 168,
+      "bytes": 26796,
+      "userData": {
+        "kind": "door_assembly",
+        "key": "p2"
+      },
+      "hijos": [
+        {
+          "nombre": "Puerta2_hoja_L",
+          "tipo": "Group",
+          "posicion": [
+            -0.697,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "door",
+            "key": "p2"
+          }
+        },
+        {
+          "nombre": "Puerta2_hoja_R",
+          "tipo": "Group",
+          "posicion": [
+            0.697,
+            0,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "door",
+            "key": "p2"
+          }
+        }
+      ],
+      "hijos_total": 2,
+      "materiales": [
+        {
+          "name": "mat_2b333c_3",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#2b333c",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_a38_3",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 0.38,
+          "transparente": true,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_2b333c_4",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#2b333c",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_a38_4",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 0.38,
+          "transparente": true,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "Extractores_par_1",
+      "archivo": "extractores_par_1.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Extractores 1 y 2 (placa 380 × 380 mm, hélice Ø320); las aspas son el grupo \"Extractor_n_aspas\"",
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -1.45,
+          1.86,
+          2.8361
+        ],
+        "max": [
+          -0.23,
+          2.24,
+          3.095
+        ]
+      },
+      "mallas": 26,
+      "triangulos": 1336,
+      "bytes": 84892,
+      "hijos": [
+        {
+          "nombre": "Extractor_1",
+          "tipo": "Group",
+          "posicion": [
+            -1.26,
+            2.05,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "ext",
+            "n": 1
+          }
+        },
+        {
+          "nombre": "Extractor_2",
+          "tipo": "Group",
+          "posicion": [
+            -0.42,
+            2.05,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "ext",
+            "n": 2
+          }
+        }
+      ],
+      "hijos_total": 2,
+      "materiales": [
+        {
+          "name": "mat_20262e",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#20262e",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_39424d",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#39424d",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_3",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_4",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_5",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_6",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_6b7684",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#6b7684",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3_2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3_3",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_20262e_2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#20262e",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_39424d_2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#39424d",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_7",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_8",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_9",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_10",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_11",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_12",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_6b7684_2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#6b7684",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3_4",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3_5",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3_6",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "Extractores_par_2",
+      "archivo": "extractores_par_2.glb",
+      "pertenece_a": "secador",
+      "descripcion": "Extractores 3 y 4 (placa 380 × 380 mm, hélice Ø320); las aspas son el grupo \"Extractor_n_aspas\"",
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          0.23,
+          1.86,
+          2.8361
+        ],
+        "max": [
+          1.45,
+          2.24,
+          3.095
+        ]
+      },
+      "mallas": 26,
+      "triangulos": 1336,
+      "bytes": 84912,
+      "hijos": [
+        {
+          "nombre": "Extractor_3",
+          "tipo": "Group",
+          "posicion": [
+            0.42,
+            2.05,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "ext",
+            "n": 3
+          }
+        },
+        {
+          "nombre": "Extractor_4",
+          "tipo": "Group",
+          "posicion": [
+            1.26,
+            2.05,
+            2.895
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "ext",
+            "n": 4
+          }
+        }
+      ],
+      "hijos_total": 2,
+      "materiales": [
+        {
+          "name": "mat_20262e_3",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#20262e",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_39424d_3",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#39424d",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_13",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_14",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_15",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_16",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_17",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_18",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_6b7684_3",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#6b7684",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3_7",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3_8",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3_9",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_20262e_4",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#20262e",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_39424d_4",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#39424d",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_19",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_20",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_21",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_22",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_23",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9aa6b2_24",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9aa6b2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_6b7684_4",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#6b7684",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3_10",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3_11",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a96a3_12",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8a96a3",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "Sondas_y_anemometros",
+      "archivo": "sondas_anemometros.glb",
+      "pertenece_a": "secador",
+      "descripcion": "7 sondas esféricas (ID2 aire; ID4–ID9 sobre bandejas) y 2 anemómetros (ID15 WS200, ID16 PR-3000)",
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -1.57,
+          0.98,
+          -2
+        ],
+        "max": [
+          1.57,
+          2.43,
+          2.765
+        ]
+      },
+      "mallas": 9,
+      "triangulos": 2576,
+      "bytes": 81464,
+      "hijos": [
+        {
+          "nombre": "Sonda_ID2",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            2.3,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "sensor",
+            "id": 2,
+            "ex": null,
+            "y0": 2.3
+          }
+        },
+        {
+          "nombre": "Sonda_ID4",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.48,
+            1.07,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "sensor",
+            "id": 4,
+            "ex": "M",
+            "y0": 1.07
+          }
+        },
+        {
+          "nombre": "Sonda_ID5",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.48,
+            1.07,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "sensor",
+            "id": 5,
+            "ex": "M",
+            "y0": 1.07
+          }
+        },
+        {
+          "nombre": "Sonda_ID6",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.48,
+            1.07,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "sensor",
+            "id": 6,
+            "ex": "M",
+            "y0": 1.07
+          }
+        },
+        {
+          "nombre": "Sonda_ID7",
+          "tipo": "Mesh",
+          "posicion": [
+            1.48,
+            1.07,
+            1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "sensor",
+            "id": 7,
+            "ex": "M",
+            "y0": 1.07
+          }
+        },
+        {
+          "nombre": "Sonda_ID8",
+          "tipo": "Mesh",
+          "posicion": [
+            1.48,
+            1.07,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "sensor",
+            "id": 8,
+            "ex": "M",
+            "y0": 1.07
+          }
+        },
+        {
+          "nombre": "Sonda_ID9",
+          "tipo": "Mesh",
+          "posicion": [
+            1.48,
+            1.07,
+            -1.91
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "sensor",
+            "id": 9,
+            "ex": "M",
+            "y0": 1.07
+          }
+        },
+        {
+          "nombre": "Anemometro_ID16_PR-3000",
+          "tipo": "Mesh",
+          "posicion": [
+            -0.84,
+            2.05,
+            2.695
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "anem",
+            "id": 16,
+            "an": "PR-3000"
+          }
+        },
+        {
+          "nombre": "Anemometro_ID15_WS200",
+          "tipo": "Mesh",
+          "posicion": [
+            0.84,
+            2.05,
+            2.695
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "kind": "anem",
+            "id": 15,
+            "an": "WS200"
+          }
+        }
+      ],
+      "hijos_total": 9,
+      "materiales": [
+        {
+          "name": "mat_ffffff",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#ffffff",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_ffffff_2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#ffffff",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_ffffff_3",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#ffffff",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_ffffff_4",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#ffffff",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_ffffff_5",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#ffffff",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_ffffff_6",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#ffffff",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_ffffff_7",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#ffffff",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_e8a33d",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#e8a33d",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_e8a33d_2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#e8a33d",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "Entorno_terreno",
+      "archivo": "entorno_terreno.glb",
+      "pertenece_a": "entorno",
+      "descripcion": "Terreno (arena con textura), huellas, camino, arbustos, piedras sueltas y cerros lejanos",
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -143.6423,
+          -7.1448,
+          -152.1879
+        ],
+        "max": [
+          140.9279,
+          6.1448,
+          149.8397
+        ]
+      },
+      "mallas": 147,
+      "triangulos": 14580,
+      "bytes": 1090336,
+      "hijos": [
+        {
+          "nombre": "Terreno_arena",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            -0.1,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ],
+          "userData": {
+            "uvRepeatHorneado": [
+              100,
+              100
+            ]
+          }
+        },
+        {
+          "nombre": "Huellas_decal",
+          "tipo": "Mesh",
+          "posicion": [
+            0,
+            -0.097,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            -1.5708,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbusto_01",
+          "tipo": "Mesh",
+          "posicion": [
+            -8.5101,
+            0.0256,
+            4.2965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5861,
+            0.2931,
+            0.5861
+          ]
+        },
+        {
+          "nombre": "Arbusto_02",
+          "tipo": "Mesh",
+          "posicion": [
+            42.2522,
+            0.0658,
+            37.6101
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.7739,
+            0.387,
+            0.7739
+          ]
+        },
+        {
+          "nombre": "Arbusto_03",
+          "tipo": "Mesh",
+          "posicion": [
+            -48.3459,
+            -0.0328,
+            1.246
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.3138,
+            0.1569,
+            0.3138
+          ]
+        },
+        {
+          "nombre": "Arbusto_04",
+          "tipo": "Mesh",
+          "posicion": [
+            7.8501,
+            0.0284,
+            8.3901
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5991,
+            0.2996,
+            0.5991
+          ]
+        },
+        {
+          "nombre": "Arbusto_05",
+          "tipo": "Mesh",
+          "posicion": [
+            15.3292,
+            0.0418,
+            -35.0597
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.6618,
+            0.3309,
+            0.6618
+          ]
+        },
+        {
+          "nombre": "Arbusto_06",
+          "tipo": "Mesh",
+          "posicion": [
+            -7.4723,
+            -0.0028,
+            21.2694
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.4538,
+            0.2269,
+            0.4538
+          ]
+        },
+        {
+          "nombre": "Arbusto_07",
+          "tipo": "Mesh",
+          "posicion": [
+            -8.4178,
+            0.0394,
+            -32.5475
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.6507,
+            0.3254,
+            0.6507
+          ]
+        },
+        {
+          "nombre": "Arbusto_08",
+          "tipo": "Mesh",
+          "posicion": [
+            -11.2993,
+            0.0358,
+            8.2417
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.6337,
+            0.3169,
+            0.6337
+          ]
+        },
+        {
+          "nombre": "Arbusto_09",
+          "tipo": "Mesh",
+          "posicion": [
+            62.7844,
+            0.0824,
+            2.7089
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.8512,
+            0.4256,
+            0.8512
+          ]
+        },
+        {
+          "nombre": "Arbusto_10",
+          "tipo": "Mesh",
+          "posicion": [
+            -55.8275,
+            0.0109,
+            3.8967
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5173,
+            0.2587,
+            0.5173
+          ]
+        },
+        {
+          "nombre": "Arbusto_11",
+          "tipo": "Mesh",
+          "posicion": [
+            -6.6892,
+            0.0159,
+            45.5359
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5408,
+            0.2704,
+            0.5408
+          ]
+        },
+        {
+          "nombre": "Arbusto_12",
+          "tipo": "Mesh",
+          "posicion": [
+            -31.4627,
+            0.0628,
+            26.3147
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.7599,
+            0.3799,
+            0.7599
+          ]
+        },
+        {
+          "nombre": "Arbusto_13",
+          "tipo": "Mesh",
+          "posicion": [
+            -22.3088,
+            0.0241,
+            22.443
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.579,
+            0.2895,
+            0.579
+          ]
+        },
+        {
+          "nombre": "Arbusto_14",
+          "tipo": "Mesh",
+          "posicion": [
+            -26.9517,
+            0.029,
+            -29.1807
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.6019,
+            0.301,
+            0.6019
+          ]
+        },
+        {
+          "nombre": "Arbusto_15",
+          "tipo": "Mesh",
+          "posicion": [
+            -37.7847,
+            0.0235,
+            -5.0474
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5764,
+            0.2882,
+            0.5764
+          ]
+        },
+        {
+          "nombre": "Arbusto_16",
+          "tipo": "Mesh",
+          "posicion": [
+            -33.5516,
+            0.0215,
+            -27.418
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5668,
+            0.2834,
+            0.5668
+          ]
+        },
+        {
+          "nombre": "Arbusto_17",
+          "tipo": "Mesh",
+          "posicion": [
+            -12.1324,
+            0.0021,
+            30.8609
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.4762,
+            0.2381,
+            0.4762
+          ]
+        },
+        {
+          "nombre": "Arbusto_18",
+          "tipo": "Mesh",
+          "posicion": [
+            -7.5703,
+            0.07,
+            -7.0667
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.7935,
+            0.3968,
+            0.7935
+          ]
+        },
+        {
+          "nombre": "Arbusto_19",
+          "tipo": "Mesh",
+          "posicion": [
+            -17.5706,
+            0.0029,
+            -35.5944
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.4802,
+            0.2401,
+            0.4802
+          ]
+        },
+        {
+          "nombre": "Arbusto_20",
+          "tipo": "Mesh",
+          "posicion": [
+            13.6156,
+            -0.0008,
+            -36.0957
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.4631,
+            0.2316,
+            0.4631
+          ]
+        },
+        {
+          "nombre": "Arbusto_21",
+          "tipo": "Mesh",
+          "posicion": [
+            54.4594,
+            -0.0352,
+            3.3673
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.3023,
+            0.1511,
+            0.3023
+          ]
+        },
+        {
+          "nombre": "Arbusto_22",
+          "tipo": "Mesh",
+          "posicion": [
+            -6.4448,
+            0.024,
+            4.2361
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5785,
+            0.2892,
+            0.5785
+          ]
+        },
+        {
+          "nombre": "Arbusto_23",
+          "tipo": "Mesh",
+          "posicion": [
+            40.3275,
+            -0.0275,
+            23.4619
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.3385,
+            0.1693,
+            0.3385
+          ]
+        },
+        {
+          "nombre": "Arbusto_24",
+          "tipo": "Mesh",
+          "posicion": [
+            2.7717,
+            0.0696,
+            12.4216
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.7915,
+            0.3958,
+            0.7915
+          ]
+        },
+        {
+          "nombre": "Arbusto_25",
+          "tipo": "Mesh",
+          "posicion": [
+            5.5355,
+            0.0887,
+            -15.5436
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.8805,
+            0.4403,
+            0.8805
+          ]
+        },
+        {
+          "nombre": "Arbusto_26",
+          "tipo": "Mesh",
+          "posicion": [
+            -55.9001,
+            0.0309,
+            -4.4449
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.611,
+            0.3055,
+            0.611
+          ]
+        },
+        {
+          "nombre": "Arbusto_27",
+          "tipo": "Mesh",
+          "posicion": [
+            -49.3514,
+            0.0633,
+            10.451
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.762,
+            0.381,
+            0.762
+          ]
+        },
+        {
+          "nombre": "Arbusto_28",
+          "tipo": "Mesh",
+          "posicion": [
+            -34.0892,
+            0.0847,
+            -10.061
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.8621,
+            0.431,
+            0.8621
+          ]
+        },
+        {
+          "nombre": "Arbusto_29",
+          "tipo": "Mesh",
+          "posicion": [
+            4.1875,
+            -0.0235,
+            29.586
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.3569,
+            0.1785,
+            0.3569
+          ]
+        },
+        {
+          "nombre": "Arbusto_30",
+          "tipo": "Mesh",
+          "posicion": [
+            10.0352,
+            0.0119,
+            -60.5318
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5222,
+            0.2611,
+            0.5222
+          ]
+        },
+        {
+          "nombre": "Arbusto_31",
+          "tipo": "Mesh",
+          "posicion": [
+            -8.9953,
+            0.0572,
+            44.3727
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.7336,
+            0.3668,
+            0.7336
+          ]
+        },
+        {
+          "nombre": "Arbusto_32",
+          "tipo": "Mesh",
+          "posicion": [
+            40.9542,
+            0.0134,
+            4.1402
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5291,
+            0.2645,
+            0.5291
+          ]
+        },
+        {
+          "nombre": "Arbusto_33",
+          "tipo": "Mesh",
+          "posicion": [
+            33.4886,
+            0.0102,
+            -14.1469
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5144,
+            0.2572,
+            0.5144
+          ]
+        },
+        {
+          "nombre": "Arbusto_34",
+          "tipo": "Mesh",
+          "posicion": [
+            -1.3744,
+            0.0935,
+            -32.1853
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.903,
+            0.4515,
+            0.903
+          ]
+        },
+        {
+          "nombre": "Arbusto_35",
+          "tipo": "Mesh",
+          "posicion": [
+            29.0027,
+            0.0178,
+            -31.2668
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5498,
+            0.2749,
+            0.5498
+          ]
+        },
+        {
+          "nombre": "Arbusto_36",
+          "tipo": "Mesh",
+          "posicion": [
+            -41.2512,
+            0.0563,
+            3.3101
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.7295,
+            0.3647,
+            0.7295
+          ]
+        },
+        {
+          "nombre": "Arbusto_37",
+          "tipo": "Mesh",
+          "posicion": [
+            -28.368,
+            0.0544,
+            -29.3734
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.7206,
+            0.3603,
+            0.7206
+          ]
+        },
+        {
+          "nombre": "Arbusto_38",
+          "tipo": "Mesh",
+          "posicion": [
+            28.0075,
+            -0.03,
+            41.9767
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.3266,
+            0.1633,
+            0.3266
+          ]
+        },
+        {
+          "nombre": "Arbusto_39",
+          "tipo": "Mesh",
+          "posicion": [
+            -20.0614,
+            0.0238,
+            -51.5713
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5779,
+            0.289,
+            0.5779
+          ]
+        },
+        {
+          "nombre": "Arbusto_40",
+          "tipo": "Mesh",
+          "posicion": [
+            -54.8923,
+            0.0194,
+            -3.9532
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.5571,
+            0.2785,
+            0.5571
+          ]
+        },
+        {
+          "nombre": "Arbusto_41",
+          "tipo": "Mesh",
+          "posicion": [
+            -11.5661,
+            0.0012,
+            -15.965
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.472,
+            0.236,
+            0.472
+          ]
+        },
+        {
+          "nombre": "Arbusto_42",
+          "tipo": "Mesh",
+          "posicion": [
+            -23.0267,
+            -0.0015,
+            3.6247
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.4597,
+            0.2298,
+            0.4597
+          ]
+        },
+        {
+          "nombre": "Arbusto_43",
+          "tipo": "Mesh",
+          "posicion": [
+            -52.0956,
+            0.0426,
+            19.0724
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.6656,
+            0.3328,
+            0.6656
+          ]
+        },
+        {
+          "nombre": "Arbusto_44",
+          "tipo": "Mesh",
+          "posicion": [
+            2.6388,
+            0.0842,
+            9.556
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.8596,
+            0.4298,
+            0.8596
+          ]
+        },
+        {
+          "nombre": "Arbusto_45",
+          "tipo": "Mesh",
+          "posicion": [
+            5.3131,
+            -0.0037,
+            10.4848
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.4492,
+            0.2246,
+            0.4492
+          ]
+        },
+        {
+          "nombre": "Arbusto_46",
+          "tipo": "Mesh",
+          "posicion": [
+            41.6374,
+            0.0023,
+            47.3827
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.4773,
+            0.2386,
+            0.4773
+          ]
+        },
+        {
+          "nombre": "Arbusto_47",
+          "tipo": "Mesh",
+          "posicion": [
+            -6.2744,
+            0.0716,
+            -65.0883
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.8008,
+            0.4004,
+            0.8008
+          ]
+        },
+        {
+          "nombre": "Arbusto_48",
+          "tipo": "Mesh",
+          "posicion": [
+            -39.9849,
+            0.0941,
+            32.9488
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.9056,
+            0.4528,
+            0.9056
+          ]
+        },
+        {
+          "nombre": "Arbusto_49",
+          "tipo": "Mesh",
+          "posicion": [
+            -29.1027,
+            0.0744,
+            -37.7703
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.8137,
+            0.4069,
+            0.8137
+          ]
+        },
+        {
+          "nombre": "Arbusto_50",
+          "tipo": "Mesh",
+          "posicion": [
+            -2.6934,
+            0.0554,
+            -37.175
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.7254,
+            0.3627,
+            0.7254
+          ]
+        },
+        {
+          "nombre": "Arbusto_51",
+          "tipo": "Mesh",
+          "posicion": [
+            -12.6014,
+            0.0539,
+            -2.7697
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.718,
+            0.359,
+            0.718
+          ]
+        },
+        {
+          "nombre": "Arbusto_52",
+          "tipo": "Mesh",
+          "posicion": [
+            -5.1106,
+            0.0599,
+            -41.2438
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.7461,
+            0.373,
+            0.7461
+          ]
+        },
+        {
+          "nombre": "Arbusto_53",
+          "tipo": "Mesh",
+          "posicion": [
+            -4.9752,
+            0.0616,
+            60.4135
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.7542,
+            0.3771,
+            0.7542
+          ]
+        },
+        {
+          "nombre": "Arbusto_54",
+          "tipo": "Mesh",
+          "posicion": [
+            -27.4064,
+            -0.01,
+            25.8767
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.4201,
+            0.21,
+            0.4201
+          ]
+        },
+        {
+          "nombre": "Arbusto_55",
+          "tipo": "Mesh",
+          "posicion": [
+            -32.1966,
+            -0.0191,
+            -9.314
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.3776,
+            0.1888,
+            0.3776
+          ]
+        },
+        {
+          "nombre": "Arbusto_56",
+          "tipo": "Mesh",
+          "posicion": [
+            -36.0852,
+            0.0509,
+            -15.7941
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.704,
+            0.352,
+            0.704
+          ]
+        },
+        {
+          "nombre": "Arbusto_57",
+          "tipo": "Mesh",
+          "posicion": [
+            17.1177,
+            0.0488,
+            -51.4601
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.6945,
+            0.3472,
+            0.6945
+          ]
+        },
+        {
+          "nombre": "Arbusto_58",
+          "tipo": "Mesh",
+          "posicion": [
+            20.9597,
+            0.0893,
+            -20.8419
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            0.8835,
+            0.4418,
+            0.8835
+          ]
+        }
+      ],
+      "hijos_total": 147,
+      "materiales": [
+        {
+          "name": "mat_ffffff_tex_2",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#ffffff",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "colores_por_vertice": true,
+          "textura": {
+            "incrustada": true,
+            "tamano": "512x512"
+          }
+        },
+        {
+          "name": "mat_ffffff_a100_tex",
+          "tipo_original": "MeshBasicMaterial (se exporta KHR_materials_unlit)",
+          "color": "#ffffff",
+          "opacidad": 1,
+          "transparente": true,
+          "lados": "Front",
+          "rugosidad": null,
+          "metalico": null,
+          "textura": {
+            "incrustada": true,
+            "tamano": "1536x1536"
+          }
+        },
+        {
+          "name": "mat_7d8049",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#7d8049",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9c8f5a",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9c8f5a",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8f8a55",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8f8a55",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8b7d6a",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#8b7d6a",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_9a8a74",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#9a8a74",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_cdb690",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#cdb690",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8b8f96",
+          "tipo_original": "MeshBasicMaterial (se exporta KHR_materials_unlit)",
+          "color": "#8b8f96",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": null,
+          "metalico": null,
+          "textura": null
+        },
+        {
+          "name": "mat_f2f2f2",
+          "tipo_original": "MeshBasicMaterial (se exporta KHR_materials_unlit)",
+          "color": "#f2f2f2",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": null,
+          "metalico": null,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "Entorno_arboles",
+      "archivo": "entorno_arboles.glb",
+      "pertenece_a": "entorno",
+      "descripcion": "Algarrobos (tronco, ramas y hojas con alfa) y sus sombras recortadas",
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -45.076,
+          -1.5988,
+          -28.4357
+        ],
+        "max": [
+          44.6316,
+          7.4512,
+          45.1473
+        ]
+      },
+      "mallas": 34,
+      "triangulos": 15902,
+      "bytes": 909820,
+      "hijos": [
+        {
+          "nombre": "Arbol_01",
+          "tipo": "Group",
+          "posicion": [
+            -10,
+            -0.1,
+            14
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            -1.4368,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_02",
+          "tipo": "Group",
+          "posicion": [
+            -20,
+            -0.1,
+            6
+          ],
+          "rotacion_euler_XYZ": [
+            3.1416,
+            -1.4621,
+            3.1416
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_03",
+          "tipo": "Group",
+          "posicion": [
+            -6,
+            -0.1,
+            22
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            -0.8341,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_04",
+          "tipo": "Group",
+          "posicion": [
+            8,
+            -0.1,
+            25
+          ],
+          "rotacion_euler_XYZ": [
+            -3.1416,
+            0.466,
+            -3.1416
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_05",
+          "tipo": "Group",
+          "posicion": [
+            -24,
+            -0.1,
+            18
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            -0.6793,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_06",
+          "tipo": "Group",
+          "posicion": [
+            25,
+            -0.1,
+            -6
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            -1.1057,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_07",
+          "tipo": "Group",
+          "posicion": [
+            -14,
+            -0.1,
+            -20
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            -0.387,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_08",
+          "tipo": "Group",
+          "posicion": [
+            16,
+            -0.1,
+            -24
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            1.3371,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_09",
+          "tipo": "Group",
+          "posicion": [
+            -34,
+            -0.1,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            -3.1416,
+            -0.1243,
+            -3.1416
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Sombra_arbol_01",
+          "tipo": "Mesh",
+          "posicion": [
+            -34,
+            -0.094,
+            0
+          ],
+          "rotacion_euler_XYZ": [
+            -1.5708,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_10",
+          "tipo": "Group",
+          "posicion": [
+            34,
+            -0.1,
+            14
+          ],
+          "rotacion_euler_XYZ": [
+            -3.1416,
+            0.0655,
+            -3.1416
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Sombra_arbol_02",
+          "tipo": "Mesh",
+          "posicion": [
+            34,
+            -0.094,
+            14
+          ],
+          "rotacion_euler_XYZ": [
+            -1.5708,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_11",
+          "tipo": "Group",
+          "posicion": [
+            3,
+            -0.1,
+            38
+          ],
+          "rotacion_euler_XYZ": [
+            -3.1416,
+            0.9976,
+            -3.1416
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Sombra_arbol_03",
+          "tipo": "Mesh",
+          "posicion": [
+            3,
+            -0.094,
+            38
+          ],
+          "rotacion_euler_XYZ": [
+            -1.5708,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_12",
+          "tipo": "Group",
+          "posicion": [
+            -40,
+            -0.1,
+            -16
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            -0.5636,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Sombra_arbol_04",
+          "tipo": "Mesh",
+          "posicion": [
+            -40,
+            -0.094,
+            -16
+          ],
+          "rotacion_euler_XYZ": [
+            -1.5708,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_13",
+          "tipo": "Group",
+          "posicion": [
+            40,
+            -0.1,
+            -18
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            -0.1853,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_14",
+          "tipo": "Group",
+          "posicion": [
+            -26,
+            -0.1,
+            34
+          ],
+          "rotacion_euler_XYZ": [
+            3.1416,
+            -1.1272,
+            3.1416
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Arbol_15",
+          "tipo": "Group",
+          "posicion": [
+            7,
+            -0.1,
+            0.8
+          ],
+          "rotacion_euler_XYZ": [
+            -3.1416,
+            1.1922,
+            -3.1416
+          ],
+          "escala": [
+            0.85,
+            0.85,
+            0.85
+          ]
+        }
+      ],
+      "hijos_total": 19,
+      "materiales": [
+        {
+          "name": "mat_4a3a2c",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#4a3a2c",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_eef2d8_tex_hoja",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#eef2d8",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "alphaTest": 0.3,
+          "textura": {
+            "incrustada": true,
+            "tamano": "256x256"
+          },
+          "nota": "alphaMap pasado al canal alfa de la textura de color"
+        },
+        {
+          "name": "mat_f6f0cc_tex_hoja",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#f6f0cc",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "alphaTest": 0.3,
+          "textura": {
+            "incrustada": true,
+            "tamano": "256x256"
+          },
+          "nota": "alphaMap pasado al canal alfa de la textura de color"
+        },
+        {
+          "name": "mat_ffffff_tex_hoja",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#ffffff",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "alphaTest": 0.3,
+          "textura": {
+            "incrustada": true,
+            "tamano": "256x256"
+          },
+          "nota": "alphaMap pasado al canal alfa de la textura de color"
+        },
+        {
+          "name": "mat_000000_a20",
+          "tipo_original": "MeshBasicMaterial (se exporta KHR_materials_unlit)",
+          "color": "#000000",
+          "opacidad": 0.2,
+          "transparente": true,
+          "lados": "Front",
+          "rugosidad": null,
+          "metalico": null,
+          "textura": null
+        }
+      ]
+    },
+    {
+      "nombre": "Entorno_edificios",
+      "archivo": "entorno_edificios.glb",
+      "pertenece_a": "entorno",
+      "descripcion": "Invernadero, Policlínico UDEP y bloques de edificios cercanos (medidos de imagen satelital, ±3 m)",
+      "posicion": [
+        0,
+        0,
+        0
+      ],
+      "rotacion_euler_XYZ": {
+        "rad": [
+          0,
+          0,
+          0
+        ],
+        "grados": [
+          0,
+          0,
+          0
+        ]
+      },
+      "escala": [
+        1,
+        1,
+        1
+      ],
+      "caja_envolvente_m": {
+        "min": [
+          -4.7,
+          -0.1,
+          -36.15
+        ],
+        "max": [
+          131.15,
+          9.145,
+          45.8
+        ]
+      },
+      "mallas": 29,
+      "triangulos": 832,
+      "bytes": 71012,
+      "hijos": [
+        {
+          "nombre": "Edificio_Invernadero",
+          "tipo": "Group",
+          "posicion": [
+            15,
+            -0.04,
+            5.6
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Edificio_01",
+          "tipo": "Group",
+          "posicion": [
+            -1,
+            -0.1,
+            11
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Edificio_02",
+          "tipo": "Group",
+          "posicion": [
+            1,
+            -0.1,
+            22
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Edificio_03",
+          "tipo": "Group",
+          "posicion": [
+            16.9,
+            -0.1,
+            39.4
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Edificio_04",
+          "tipo": "Group",
+          "posicion": [
+            30.8,
+            -0.1,
+            29.3
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Edificio_05",
+          "tipo": "Group",
+          "posicion": [
+            18.8,
+            -0.1,
+            29
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Edificio_06",
+          "tipo": "Group",
+          "posicion": [
+            21.5,
+            -0.1,
+            -11
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Edificio_07",
+          "tipo": "Group",
+          "posicion": [
+            -2.6,
+            -0.1,
+            -8
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Edificio_Policlínico_UDEP",
+          "tipo": "Group",
+          "posicion": [
+            95,
+            -0.1,
+            -1
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "nombre": "Edificio_08",
+          "tipo": "Group",
+          "posicion": [
+            118,
+            -0.1,
+            -24
+          ],
+          "rotacion_euler_XYZ": [
+            0,
+            0,
+            0
+          ],
+          "escala": [
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "hijos_total": 10,
+      "materiales": [
+        {
+          "name": "mat_e6f1ea_a38",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#e6f1ea",
+          "opacidad": 0.38,
+          "transparente": true,
+          "lados": "Double",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_8a9099_a60",
+          "tipo_original": "LineBasicMaterial",
+          "color": "#8a9099",
+          "opacidad": 0.6,
+          "transparente": true,
+          "lados": "Front",
+          "rugosidad": null,
+          "metalico": null,
+          "textura": null
+        },
+        {
+          "name": "mat_d3d5d8",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#d3d5d8",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        },
+        {
+          "name": "mat_b4b8be",
+          "tipo_original": "MeshLambertMaterial",
+          "color": "#b4b8be",
+          "opacidad": 1,
+          "transparente": false,
+          "lados": "Front",
+          "rugosidad": 1,
+          "metalico": 0,
+          "textura": null
+        }
+      ]
+    }
+  ]
+}
