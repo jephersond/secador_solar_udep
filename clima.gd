@@ -146,6 +146,13 @@ func recibir_datos(datos: Dictionary) -> void:
 		cambiar_modo(Modo.PC)
 		return
 
+	if datos.get("fuente") == "sin_internet" and modo_actual == Modo.REGISTRO:
+		# Sin red ni cache para esta fecha: no reutilizar las curvas de otro dia
+		curva_nubes = []
+		curva_precip = []
+		fijar_clima("soleado")
+		return
+
 	if datos.has("curva_nubes"): curva_nubes = datos["curva_nubes"]
 	if datos.has("curva_precip"): curva_precip = datos["curva_precip"]
 

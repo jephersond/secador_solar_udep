@@ -26,6 +26,8 @@ var _udp := PacketPeerUDP.new()
 var _ult_msg_ms := 0
 var _pid_puente: int = -1
 var _acum_ping: float = 0.0
+var _puente_lanzado: bool = false             # alguna vez se pudo lanzar el puente
+var _ult_relanzo_ms: int = 0
 
 
 func _ready() -> void:
@@ -83,6 +85,14 @@ func _process(delta: float) -> void:
 	if estado != "sin_puente" and (Time.get_ticks_msec() - _ult_msg_ms) / 1000.0 > SIN_LATIDO_S:
 		_aplicar_estado("sin_puente", "", "", 0)
 
+	# Si el proceso del puente murio, lo relanza (maximo una vez cada 10 s)
+	if estado == "sin_puente" and _puente_lanzado and (_pid_puente <= 0 or not OS.is_process_running(_pid_puente)):
+		var ahora := Time.get_ticks_msec()
+		if ahora - _ult_relanzo_ms > 10000:
+			_ult_relanzo_ms = ahora
+			print("[ENLACE] El puente no responde: lo relanzo")
+			_iniciar_puente_python()
+
 
 # ----------------------------------------------------------------------
 #  GESTIÓN DEL SUBPROCESO PYTHON
@@ -104,12 +114,13 @@ func _iniciar_puente_python() -> void:
 			push_warning("[ENLACE] No encuentro puente_datos.py para autoarranque")
 			return
 
-	var args := PackedStringArray([script])
+	var args := PackedStringArray([script, "--registrar"])
 	_pid_puente = OS.create_process("python", args, false)
 	if _pid_puente <= 0:
 		_pid_puente = OS.create_process("py", args, false)
-		
+
 	if _pid_puente > 0:
+		_puente_lanzado = true
 		print("[ENLACE] Puente Python lanzado en segundo plano (PID %d)" % _pid_puente)
 
 

@@ -120,6 +120,8 @@ func abrir() -> void:
 func cerrar() -> void:
 	if not visible:
 		return
+	if amplia:
+		establecer_ampliada(false)
 	visible = false
 	cerrada.emit()
 

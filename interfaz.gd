@@ -207,7 +207,7 @@ func _construir_riel_y_tarjetas() -> void:
 func _crear_tarjeta(id: String, tit: String, amp: bool) -> Tarjeta:
 	var t := Tarjeta.crear(_raiz, tit)
 	var top_inicial: float = TOP_TARJETA_CON_CLIMA if _clima_desplegado else TOP_TARJETA_NORMAL
-	t.colocar(ANCHO_RIEL + SEP_RIEL, 16.0, ANCHO_TARJETA, 16.0, top_inicial, 16.0, ALTO_BARRA + 30.0)
+	t.colocar(ANCHO_RIEL + SEP_RIEL, top_inicial, ANCHO_TARJETA, 16.0, TOP_TARJETA_AMPLIA, 16.0, ALTO_BARRA + 30.0)
 	t.ampliable = amp
 	t.cerrada.connect(_al_cerrar_tarjeta.bind(id))
 	_cristales.append(t.vidrio)

@@ -37,7 +37,7 @@ func _ready() -> void:
 	for i in range(N_FORMAS):
 		_formas.append(_crear_forma(101 + i * 37))
 
-	var img := Image.create(4, 4, false, Image.FORMAT_RGB8)
+	var img := Image.create_empty(4, 4, false, Image.FORMAT_RGB8)
 	img.fill(Color(1.0, 0.02, 0.0))
 	_orm = ImageTexture.create_from_image(img)
 
@@ -66,8 +66,8 @@ func _crear_forma(semilla: int) -> Dictionary:
 	ruido.seed = semilla
 	ruido.frequency = 0.05
 
-	var alb := Image.create(RES, RES, false, Image.FORMAT_RGBA8)
-	var emi := Image.create(RES, RES, false, Image.FORMAT_RGB8)
+	var alb := Image.create_empty(RES, RES, false, Image.FORMAT_RGBA8)
+	var emi := Image.create_empty(RES, RES, false, Image.FORMAT_RGB8)
 	var azul := Color(0.55, 0.68, 0.88)
 
 	for y in range(RES):

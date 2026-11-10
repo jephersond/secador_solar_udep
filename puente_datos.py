@@ -19,7 +19,7 @@ import socket
 import sys
 import threading
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 try:
     from conductor_serial import ConductorSerial
@@ -29,6 +29,7 @@ except ImportError:     # sin el archivo, el puente funciona igual (sin serial)
 IDS_CSV = [1, 2, 4, 5, 6, 7, 8, 9, 15, 16]    # columnas del CSV de registro
 ID_BME = 2                                     # el unico con r3 (presion)
 LATIDO_S = 2.0                                 # reenvio periodico del estado
+TIEMPO_SIN_GODOT_S = 20.0                      # sin pings de Godot durante este tiempo -> el puente se apaga
 
 
 # ======================================================================
@@ -100,14 +101,21 @@ class Simulador(Conductor):
             return
             
         self.puente.en_linea(self)
-        t_base_sim = filas[0][0]
+
+        # Cada vuelta del CSV se desplaza en el tiempo para que Godot no
+        # descarte las lecturas como repetidas (ts <= ultimo ts).
+        span = (filas[-1][0] - filas[0][0]).total_seconds()
+        paso = span / (len(filas) - 1)
+        vuelta = 0
 
         while not self.parar.is_set():
+            desplazo = timedelta(seconds=vuelta * (span + paso))
+            vuelta += 1
             for i, (t_fila, ids) in enumerate(filas):
                 if self.parar.is_set():
                     return
-                # Envia la estampa real del archivo para que Godot avance de min 0 a min 60
-                self.puente.publicar(ids, fecha_estampa=t_fila)
+                # Envia la estampa del archivo para que Godot avance de min 0 a min 60
+                self.puente.publicar(ids, fecha_estampa=t_fila + desplazo)
                 if i + 1 < len(filas):
                     dt = (filas[i + 1][0] - t_fila).total_seconds()
                     # Espera dividida entre la velocidad elegida (ej. x10, x60)
@@ -263,7 +271,6 @@ class Puente:
         self.destino = ("127.0.0.1", a.puerto_godot)
         self.tx = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.rx = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.rx.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.rx.bind(("127.0.0.1", a.puerto_cmd))
         self.rx.settimeout(0.5)
         self.lock = threading.Lock()
@@ -418,6 +425,9 @@ class Puente:
         if not self.registrar:
             return
         os.makedirs(self.dir_registros, exist_ok=True)
+        # Evita que Godot importe los CSV de esta carpeta como traducciones
+        with open(os.path.join(self.dir_registros, ".gdignore"), "a"):
+            pass
         ruta = os.path.join(self.dir_registros, f"Registro_{datetime.now():%Y%m%d_%H%M%S}.csv")
         self.archivo_csv = open(ruta, "w", newline="", encoding="utf-8")
         self.escritor = csv.writer(self.archivo_csv, lineterminator="\n")
@@ -460,7 +470,7 @@ class Puente:
             self.conectar(auto, {})
             
         t_ultimo_contacto = time.time()
-        
+
         try:
             while True:
                 ahora = time.time()
@@ -479,8 +489,9 @@ class Puente:
                     self.enviar_estado()
 
                 # AUTO-CIERRE: Si Godot se cierra o lo detienes con el botón rojo,
-                # tras 4 segundos sin comandos ni pings, Python se apaga solo.
-                if ahora - t_ultimo_contacto > 4.0:
+                # tras TIEMPO_SIN_GODOT_S sin comandos ni pings, Python se apaga solo.
+                # (No aplica con --auto: ahi se prueba sin Godot.)
+                if not auto and ahora - t_ultimo_contacto > TIEMPO_SIN_GODOT_S:
                     print("[PUENTE] Godot se cerró. Apagando puente Python...")
                     break
                     
@@ -505,7 +516,7 @@ def main():
                     help="guardar cada sesion en un CSV (mismo formato que MATLAB)")
     ap.add_argument("--carpeta-registros", default=os.path.join(base, "registros_puente"))
     ap.add_argument("--auto", choices=list(CONDUCTORES), default=None,
-                    help="conectar solo al iniciar (para pruebas sin Godot)")
+                    help="conectar solo al iniciar (para pruebas sin Godot; con esto no se apaga solo)")
     a = ap.parse_args()
     Puente(a).bucle(a.auto)
 

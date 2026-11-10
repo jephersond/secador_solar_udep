@@ -79,6 +79,7 @@ func _input(ev: InputEvent) -> void:
 	var k := ev as InputEventKey
 	if k != null and k.pressed and k.keycode == KEY_ESCAPE:
 		cerrar()
+		get_viewport().set_input_as_handled()
 		return
 	var mb := ev as InputEventMouseButton
 	if mb == null or not mb.pressed:

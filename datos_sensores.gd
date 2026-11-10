@@ -33,7 +33,7 @@ const ARCHIVO_CONFIG := "user://config_visor.cfg"
 const NOMBRES := {
 	1: "ID1 (sin identificar)", 2: "BME280 (aire)",
 	6: "Bandeja 1 · ID6", 5: "Bandeja 2 · ID5", 4: "Bandeja 3 · ID4",
-	7: "Bandeja 4 · ID7", 8: "Bandeja 5 · ID8", 9: "ID9 · sonda de aire",
+	7: "Bandeja 4 · ID7", 8: "Bandeja 5 · ID8", 9: "Bandeja 6 · ID9",
 	15: "WS200 (ID15)", 16: "PR-3000 (ID16)",
 }
 

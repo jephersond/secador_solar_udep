@@ -21,7 +21,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 
-LAT, LON = -5.1945, -80.6328                   # Piura
+LAT, LON = -5.1708, -80.6380                   # campus UDEP, Piura (igual que sitio.gd)
 TZ = timezone(timedelta(hours=-5))             # Peru: UTC-5
 
 # clave corta que viaja a Godot -> variable de Open-Meteo
@@ -153,18 +153,19 @@ def clima_historico(fecha, hora, duracion_h):
         try:
             h = pedir(url, p)["hourly"]
             if h["cloud_cover"][h_inicio] is not None:
-                # Recortamos SOLO el intervalo de la simulacion para optimizar espacio
+                # Se guarda el dia completo (24 h): pesa poco y asi un registro posterior
+                # de otras horas del mismo dia no sobrescribe un rango mas chico.
                 nuevo = {
-                    "h_inicio": h_inicio,
-                    "h_fin": h_fin,
-                    "nubes": [(v or 0) / 100.0 for v in h["cloud_cover"][h_inicio: h_fin + 1]],
-                    "precip": [(v or 0.0) for v in h["precipitation"][h_inicio: h_fin + 1]],
+                    "h_inicio": 0,
+                    "h_fin": 23,
+                    "nubes": [(v or 0) / 100.0 for v in h["cloud_cover"][0:24]],
+                    "precip": [(v or 0.0) for v in h["precipitation"][0:24]],
                 }
                 for clave, var in EXTRA.items():
-                    nuevo[clave] = h[var][h_inicio: h_fin + 1]
+                    nuevo[clave] = h[var][0:24]
                 cache[fecha] = nuevo
                 guardar_cache(cache)
-                print(f"[CACHE] Descargado de internet. Recortado a horas {h_inicio}-{h_fin} y guardado en disco.")
+                print("[CACHE] Descargado de internet. Dia completo guardado en disco.")
 
                 res = _desde_cache(nuevo, fecha, hora)
                 # la hora exacta se clasifica con los datos crudos, como antes
