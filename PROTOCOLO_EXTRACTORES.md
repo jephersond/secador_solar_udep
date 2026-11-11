@@ -11,7 +11,8 @@ El ESP32 **decide y tiene la última palabra**; Godot solo manda modo y límites
 | `X1 MODO OFF` | Extractor 1 apagado |
 | `X1 MODO ON` | Encendido manual (ángulo que ya use el firmware) |
 | `X1 MODO AUTO` | Automático según fuente y límites |
-| `X1 FUENTE EXT` | En auto decide la temperatura del extractor |
+| `X1 FUENTE PROM` | En auto decide el promedio de las 6 bandejas (ignorar las que den NaN) |
+| `X1 FUENTE B1` ... `B6` | En auto decide la temperatura de una sola bandeja |
 | `X1 FUENTE AMB` | En auto decide la temperatura ambiente |
 | `X1 LIM 35.0 40.0` | En auto: empieza a abrir a 35.0 °C y llega al ángulo máximo a 40.0 °C (equivale a lim1/lim2 actuales) |
 | `X?` | Pide el estado de ambos extractores |

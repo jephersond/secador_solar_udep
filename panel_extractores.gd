@@ -10,12 +10,17 @@ extends VBoxContainer
 const N_EXTRACTORES: int = 2
 const MODOS: Array = ["OFF", "ON", "AUTO"]
 const MODOS_TXT: Array = ["Apagado", "Encendido", "Automático"]
-const FUENTES: Array = ["EXT", "AMB"]
-const FUENTES_TXT: Array = ["Temp. del extractor", "Temp. ambiente"]
+# Fuente de la temperatura en automatico: promedio de las 6 bandejas, una bandeja o el ambiente
+const FUENTES: Array = ["PROM", "B1", "B2", "B3", "B4", "B5", "B6", "AMB"]
+const FUENTES_TXT: Array = ["Promedio de las 6 bandejas", "Bandeja 1", "Bandeja 2", "Bandeja 3",
+	"Bandeja 4", "Bandeja 5", "Bandeja 6", "Temp. ambiente"]
+
+signal giro_cambiado(indice: int, girando: bool)
 
 var enlace: EnlaceDatos
 
 var _modo: Array[int] = [0, 0]
+var _on_real: Array[bool] = [false, false]   # lo que informa el ESP32 (ON=1)
 var _fuente: Array[int] = [0, 0]
 var _t_on: Array[SpinBox] = []
 var _t_max: Array[SpinBox] = []
@@ -143,6 +148,7 @@ func _spin(padre: Control, txt: String, valor: float) -> SpinBox:
 
 func _elegir_modo(i: int, k: int) -> void:
 	_modo[i] = k
+	_emitir_giro(i)
 	for j: int in _b_modo[i].size():
 		(_b_modo[i][j] as Button).set_pressed_no_signal(j == k)
 	_bloque_auto[i].visible = (k == 2)
@@ -170,8 +176,20 @@ func _enviar(linea: String) -> void:
 		enlace.enviar_extractor(linea)
 
 
+# Encendido gira siempre (vista previa); Automatico solo si el ESP32 conectado informa que esta encendido
+func _emitir_giro(i: int) -> void:
+	var girar: bool = _modo[i] == 1 or (_modo[i] == 2 and _en_vivo() and _on_real[i])
+	giro_cambiado.emit(i, girar)
+
+
+func _en_vivo() -> bool:
+	return enlace != null and enlace.estado == "online" and enlace.fuente.begins_with("serial")
+
+
 func _pintar_estado() -> void:
-	var en_vivo: bool = enlace != null and enlace.estado == "online" and enlace.fuente.begins_with("serial")
+	for i: int in N_EXTRACTORES:
+		_emitir_giro(i)
+	var en_vivo: bool = _en_vivo()
 	_lbl_estado.text = "● ESP32 conectado por serial" if en_vivo else "○ Sin ESP32 en vivo: activa el modo en vivo desde Conexión para controlar los extractores."
 	_lbl_estado.add_theme_color_override("font_color", Tema.OK if en_vivo else Tema.AVISO)
 
@@ -204,6 +222,9 @@ func _al_respuesta(linea: String) -> void:
 				if f >= 0:
 					_fuente[n] = f
 					_o_fuente[n].select(f)
+			"ON":
+				_on_real[n] = kv[1] == "1"
+				_emitir_giro(n)
 			"LIM":
 				var lim: PackedStringArray = kv[1].split("/")
 				if lim.size() == 2:

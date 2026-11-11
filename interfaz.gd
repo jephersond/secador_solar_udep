@@ -5,6 +5,7 @@ extends CanvasLayer
 #  interfaz.gd - Control UI, HUD de sensores, franja estilo IA y tarjetas
 # ======================================================================
 
+signal giro_extractor(indice: int, girando: bool)
 signal accion_secador(id: String, activa: bool)
 signal vista_cambiada(nombre_vista: String)
 
@@ -177,7 +178,6 @@ func _construir() -> void:
 
 func _construir_riel_y_tarjetas() -> void:
 	_riel = Riel.crear(_raiz, [
-		{"id": "extractores", "icono": "extractores", "tip": "Extractores", "arriba": true},
 		{"id": "rotulos", "icono": "rotulos", "tip": "Mostrar/Ocultar Rótulos de Sensores", "arriba": true},
 		{"id": "cotas", "icono": "cotas", "tip": "Cotas", "arriba": true},
 		{"id": "puertas", "icono": "puertas", "tip": "Puertas", "arriba": true},
@@ -199,6 +199,7 @@ func _construir_riel_y_tarjetas() -> void:
 
 	var t_ext := _crear_tarjeta("control_ext", "Control de extractores", false)
 	_p_ext = PanelExtractores.new()
+	_p_ext.giro_cambiado.connect(func(i: int, g: bool): giro_extractor.emit(i, g))
 	t_ext.contenido.add_child(_p_ext)
 
 	var t_graf := _crear_tarjeta("graficas", "Gráficas", true)
@@ -592,13 +593,20 @@ func _actualizar_posiciones_rotulos_hud() -> void:
 			continue
 
 		var dist: float = cam_pos.distance_to(pos_mundo)
-		panel.z_index = clampi(int(100.0 - dist * 2.0), 0, 100)
+		# siempre DETRAS de tarjetas y paneles (z 0); entre rotulos, los cercanos delante
+		panel.z_index = -1 - clampi(int(dist * 2.0), 0, 100)
 
 		var pos_2d: Vector2 = camara_3d.unproject_position(pos_mundo)
 		panel.visible = true
 		panel.position = pos_2d - Vector2(panel.size.x * 0.5, panel.size.y + 12.0)
 
-		if datos.hay_datos():
+		if not _datos_visibles():
+			# fuera de en vivo / registro no se esta leyendo nada: NaN y sin color de alarma
+			item["lbl_t"].text = "NaN"
+			item["lbl_n"].text = NOMBRES_SENSORES[id]
+			item["punto"].color = COL_SIN_DATO
+			item["sb"].border_color = COL_SIN_DATO
+		elif datos.hay_datos():
 			var v: Dictionary = datos.valor(id, m)
 			var estado: int = datos.estado_sensor(id)
 			var col_estado: Color = COL_OK
@@ -621,6 +629,11 @@ func _actualizar_posiciones_rotulos_hud() -> void:
 			item["lbl_n"].text = txt_n
 			item["punto"].color = col_estado
 			item["sb"].border_color = col_estado
+
+
+# Los datos de los sensores solo se muestran en modo en vivo o con el clima en Registro
+func _datos_visibles() -> bool:
+	return datos.en_vivo or _clima == null or _clima.modo_actual == Clima.Modo.REGISTRO
 
 
 func _al_riel(id: String) -> void:

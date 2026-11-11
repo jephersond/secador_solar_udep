@@ -263,7 +263,7 @@ def convertir_sd(ruta, dir_salida):
 # ======================================================================
 # Unicos comandos que se aceptan hacia el ESP32 (ver PROTOCOLO_EXTRACTORES.md)
 COMANDO_EXT = re.compile(
-    r"^(X[12] (MODO (OFF|ON|AUTO)|FUENTE (EXT|AMB)|LIM \d{1,3}(\.\d)? \d{1,3}(\.\d)?)|X\?)$")
+    r"^(X[12] (MODO (OFF|ON|AUTO)|FUENTE (PROM|B[1-6]|AMB)|LIM \d{1,3}(\.\d)? \d{1,3}(\.\d)?)|X\?)$")
 
 
 class Puente:

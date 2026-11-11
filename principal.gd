@@ -55,8 +55,8 @@ var _minuto_actual: float = 0.0
 var _listo: bool = false
 
 # --- Animación de extractores y puertas ---
-var girar_extractores: bool = false
-var _aspas: Array[Node3D] = []
+var _girar: Array[bool] = [false, false]      # giro de cada par de extractores
+var _aspas_par: Array = [[], []]               # aspas de cada par de extractores (Array de Node3D)
 var _hojas_puertas: Array[Dictionary] = []
 var _puertas_abiertas: bool = false
 
@@ -180,10 +180,12 @@ func _ready() -> void:
 	interfaz.asignar_clima(clima)
 	interfaz.asignar_enlace(enlace_datos)    # <-- CAMBIO 1: Enlace asignado a la interfaz
 	interfaz.accion_secador.connect(_al_accion_secador)
+	interfaz.giro_extractor.connect(func(i: int, g: bool): _girar[i] = g)
 	interfaz.vista_cambiada.connect(_al_cambiar_vista_camara)
 
 	colores = ColoresBandejas.new()
 	colores.datos = datos
+	colores.clima = clima
 	colores.secador = secador
 	add_child(colores)
 
@@ -225,10 +227,11 @@ func _process(delta: float) -> void:
 	charcos.actualizar(delta, clima.lluvia, clima.nubes, luz)
 	suelo.actualizar(delta, clima.lluvia, clima.nubes, luz)
 
-	if girar_extractores:
-		var paso: float = delta * 18.0
-		for a: Node3D in _aspas:
-			a.rotate_object_local(Vector3.FORWARD, paso)
+	var paso: float = delta * 18.0
+	for i: int in _aspas_par.size():
+		if _girar[i]:
+			for a: Node3D in _aspas_par[i]:
+				a.rotate_object_local(Vector3.FORWARD, paso)
 
 
 func _cargar_pieza(ruta: String, grupo_padre: Node3D) -> Node:
@@ -289,25 +292,27 @@ void fragment() {
 #  CONFIGURACIÓN DE EXTRACTORES Y PUERTAS
 # ======================================================================
 func _configurar_extractores() -> void:
-	_aspas.clear()
-	for nom: String in ["extractores_par_1", "extractores_par_2"]:
+	_aspas_par = [[], []]
+	var pares: Array[String] = ["extractores_par_1", "extractores_par_2"]
+	for i: int in pares.size():
+		var nom: String = pares[i]
 		var raiz := secador.get_node_or_null(nom)
 		if raiz == null:
 			continue
 		var encontrados: Array[String] = []
-		_buscar_aspas(raiz, encontrados)
+		_buscar_aspas(raiz, encontrados, _aspas_par[i])
 		print("[EXTRACTORES] %s: encontrados %s" % [nom, str(encontrados)])
 
 
-func _buscar_aspas(n: Node, lista_nombres: Array[String]) -> void:
+func _buscar_aspas(n: Node, lista_nombres: Array[String], destino: Array) -> void:
 	var nom := n.name.to_lower()
 	var es_aspa := nom.contains("aspa") or nom.contains("blade") or nom.contains("helice") \
 		or nom.contains("rotor") or nom.contains("fan") or nom.contains("propeller")
 	if n is Node3D and es_aspa:
-		_aspas.append(n as Node3D)
+		destino.append(n as Node3D)
 		lista_nombres.append(n.name)
 	for h: Node in n.get_children():
-		_buscar_aspas(h, lista_nombres)
+		_buscar_aspas(h, lista_nombres, destino)
 
 
 func _recoger_mallas(n: Node, lista: Array[MeshInstance3D]) -> void:
@@ -393,9 +398,6 @@ func _al_accion_secador(id: String, activa: bool) -> void:
 					var pieza := secador.get_node_or_null(nombre)
 					if pieza != null:
 						pieza.visible = ver_carcasa
-
-		"extractores":
-			girar_extractores = activa
 
 		"puertas":
 			_animar_puertas(activa)

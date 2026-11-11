@@ -8,6 +8,7 @@ const GRAD := [Color(0.098, 0.902, 0.784), Color(0.40, 0.74, 0.52), Color(0.70, 
 const FILTRO := "malla"
 
 var datos: DatosSensores
+var clima: Clima
 var secador: Node3D
 var _mats := {}
 var _t_vivo: float = 0.0
@@ -33,6 +34,9 @@ func _ready() -> void:
 	datos.minuto_cambiado.connect(_refrescar)
 	datos.correccion_cambiada.connect(_refrescar)
 	datos.datos_cargados.connect(_refrescar)
+	datos.modo_vivo_cambiado.connect(_refrescar)
+	if clima != null:
+		clima.modo_cambiado.connect(_refrescar)
 	_refrescar()
 
 func _color(t: float) -> Color:
@@ -55,9 +59,10 @@ func _process(delta: float) -> void:
 
 
 func _refrescar(_x = null) -> void:
-	if not datos.hay_datos():
+	var visibles: bool = datos.en_vivo or clima == null or clima.modo_actual == Clima.Modo.REGISTRO
+	if not datos.hay_datos() and visibles:
 		return
 	for n in _mats:
-		var c := _color(datos.valor(MAPA[n], datos.minuto)["T"])
+		var c := _color(datos.valor(MAPA[n], datos.minuto)["T"] if visibles else NAN)
 		for mat in _mats[n]:
 			mat.albedo_color = c
