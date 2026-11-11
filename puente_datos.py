@@ -261,6 +261,11 @@ def convertir_sd(ruta, dir_salida):
 # ======================================================================
 #  PUENTE
 # ======================================================================
+# Unicos comandos que se aceptan hacia el ESP32 (ver PROTOCOLO_EXTRACTORES.md)
+COMANDO_EXT = re.compile(
+    r"^(X[12] (MODO (OFF|ON|AUTO)|FUENTE (EXT|AMB)|LIM \d{1,3}(\.\d)? \d{1,3}(\.\d)?)|X\?)$")
+
+
 class Puente:
     def __init__(self, a):
         self.csv_por_defecto = a.csv
@@ -385,6 +390,22 @@ class Puente:
         self.conductor = clase(self, params)
         self.conductor.start()
 
+    # ---------- control de extractores (comandos de texto hacia el ESP32) ----------
+    def extractor(self, linea):
+        linea = str(linea).strip()
+        if not COMANDO_EXT.match(linea):
+            self.aviso(f"Comando de extractor no valido: {linea}", True)
+            return
+        c = self.conductor
+        if self.estado != "online" or c is None or not hasattr(c, "enviar"):
+            self.aviso("Activa el modo en vivo con el ESP32 antes de controlar los extractores.", True)
+            return
+        if not c.enviar(linea):
+            self.aviso("No pude escribir en el puerto serial.", True)
+
+    def linea_extractor(self, texto):
+        self.enviar({"tipo": "extractores", "linea": texto})
+
     def en_linea(self, conductor):
         self.cambiar_estado("online", self.fuente or conductor.nombre, conductor.detalle)
 
@@ -458,6 +479,8 @@ class Puente:
         elif cmd == "importar":
             threading.Thread(target=self.importar, daemon=True,
                              args=(str(c.get("fuente", "")), c.get("params") or {})).start()
+        elif cmd == "extractor":
+            self.extractor(c.get("linea", ""))
         elif cmd == "ping":
             self.enviar_estado()
 

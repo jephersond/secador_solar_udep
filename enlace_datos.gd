@@ -9,6 +9,7 @@ extends Node
 
 signal estado_cambiado(info: Dictionary)      # estado, fuente, detalle, lecturas
 signal fuentes_actualizadas(lista: Array)     # lo que detecto el puente
+signal extractor_respuesta(linea: String)       # lo que contesta el ESP32 al control de extractores
 signal aviso(texto: String, error: bool)      # mensajes del puente para mostrar al usuario
 
 const PUERTO_RX := 5006
@@ -81,6 +82,8 @@ func _process(delta: float) -> void:
 				aviso.emit(str(m.get("texto", "")), bool(m.get("error", false)))
 			"archivo_listo":
 				_al_archivo_listo(m)
+			"extractores":
+				extractor_respuesta.emit(str(m.get("linea", "")))
 
 	# Si el puente deja de mandar latidos, lo damos por apagado
 	if estado != "sin_puente" and (Time.get_ticks_msec() - _ult_msg_ms) / 1000.0 > SIN_LATIDO_S:
@@ -201,6 +204,12 @@ func activar_vivo(id_fuente: String, params: Dictionary = {}) -> void:
 func _restaurar_registro_previo() -> void:
 	if datos != null and _ruta_previa != "" and FileAccess.file_exists(_ruta_previa):
 		datos.cargar_csv(_ruta_previa)
+
+
+# Manda un comando de texto al ESP32 por el puente (ver PROTOCOLO_EXTRACTORES.md).
+# Solo funciona con la conexion serial en vivo.
+func enviar_extractor(linea: String) -> void:
+	_cmd({"cmd": "extractor", "linea": linea})
 
 
 func desconectar() -> void:

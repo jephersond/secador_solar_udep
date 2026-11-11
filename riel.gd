@@ -144,6 +144,12 @@ class IconoRiel extends Button:
 			"graficas":
 				draw_polyline(PackedVector2Array([_q(3, 20), _q(21, 20)]), col, w, true)
 				draw_polyline(PackedVector2Array([_q(5, 15), _q(9, 10), _q(13, 13), _q(19, 5)]), col, w, true)
+			"control":
+				for y: float in [6.0, 12.0, 18.0]:
+					draw_line(_q(3, y), _q(21, y), col, w, true)
+				draw_circle(_q(8, 6), 2.0, col)
+				draw_circle(_q(16, 12), 2.0, col)
+				draw_circle(_q(10, 18), 2.0, col)
 			"diagnostico":
 				draw_polyline(PackedVector2Array([
 					_q(3, 12), _q(7, 12), _q(9, 6), _q(13, 18), _q(15, 12), _q(21, 12)]), col, w, true)

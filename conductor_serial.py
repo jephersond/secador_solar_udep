@@ -25,6 +25,8 @@ import time
 
 SEGMENTO = re.compile(r"ID(\d+):\s*([^|]*)")
 ENTERO = re.compile(r"-?\d+")
+# Respuestas del firmware al control de extractores: "OK X1 ...", "ERR ...", "X1: MODO=AUTO ..."
+RESPUESTA_EXT = re.compile(r"^(OK X[12]\b|ERR\b|X[12]:)")
 MIN_IDS = 3                 # un ciclo con menos sensores se descarta (linea cortada)
 ESPERA_INICIAL_S = 60.0     # Le da 1 minuto al ESP32 para su primer ciclo sin alarmar
 SIN_DATOS_S = 90.0          # Tolera ciclos espaciados
@@ -89,9 +91,24 @@ class ConductorSerial(threading.Thread):
         self.baudios = int(self.params.get("baudios", 115200))
         self.detalle = f"{self.puerto} · {self.baudios}"
         self._abrir = abrir or self._abrir_pyserial
+        self._ser = None
+        self._lock_tx = threading.Lock()
 
     def detener(self):
         self.parar.set()
+
+    def enviar(self, linea):
+        """Manda una linea de comando al ESP32 (p. ej. "X1 MODO AUTO"). True si se escribio."""
+        ser = self._ser
+        if ser is None:
+            return False
+        try:
+            with self._lock_tx:
+                ser.write((linea.strip() + "\n").encode("ascii", errors="ignore"))
+                ser.flush()
+            return True
+        except Exception:
+            return False
 
     def _abrir_pyserial(self):
         try:
@@ -115,6 +132,7 @@ class ConductorSerial(threading.Thread):
         except Exception as e:
             self.puente.fallo(f"No pude abrir {self.puerto}: {e}")
             return
+        self._ser = ser
 
         lector = LectorCiclos()
         t_inicio = time.time()
@@ -134,6 +152,11 @@ class ConductorSerial(threading.Thread):
                         primera = False
                         continue
                     texto = crudo.decode("utf-8", errors="ignore")
+                    if RESPUESTA_EXT.match(texto.strip()):      # respuesta al control de extractores
+                        puente = self.puente
+                        if hasattr(puente, "linea_extractor"):
+                            puente.linea_extractor(texto.strip())
+                        continue
                     for ciclo in lector.alimentar(texto):
                         if len(ciclo) < MIN_IDS:
                             continue
@@ -153,6 +176,7 @@ class ConductorSerial(threading.Thread):
                     self.puente.fallo(f"No llegan datos de {self.puerto} a {self.baudios} baudios. "
                                       f"El firmware imprime a 115200: revisa los baudios en Ajustes.")
         finally:
+            self._ser = None
             try:
                 ser.close()
             except Exception:

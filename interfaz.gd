@@ -70,6 +70,7 @@ var _toast: Label
 var _id_aviso: int = 0
 var _b_play: BotonIcono
 var _b_reset: BotonIcono
+var _p_ext: PanelExtractores
 var _b_vel: OptionButton
 var _lbl_vivo: Label
 var _b_volver: Button
@@ -183,6 +184,7 @@ func _construir_riel_y_tarjetas() -> void:
 		{"id": "techo", "icono": "techo", "tip": "Techo / Carcasa", "arriba": true},
 		{"id": "despiece", "icono": "despiece", "tip": "Vista explosionada del secador", "arriba": true},
 		{"id": "despiece_bandeja", "icono": "despiece_bandeja", "tip": "Despiece de la bandeja 2", "arriba": true},
+		{"id": "control_ext", "icono": "control", "tip": "Control de extractores"},
 		{"id": "graficas", "icono": "graficas", "tip": "Gráficas"},
 		{"id": "diagnostico", "icono": "diagnostico", "tip": "Diagnóstico"},
 		{"id": "tabla", "icono": "tabla", "tip": "Tabla"},
@@ -194,6 +196,10 @@ func _construir_riel_y_tarjetas() -> void:
 
 	_estados_secador["rotulos"] = true
 	_riel.marcar("rotulos", true)
+
+	var t_ext := _crear_tarjeta("control_ext", "Control de extractores", false)
+	_p_ext = PanelExtractores.new()
+	t_ext.contenido.add_child(_p_ext)
 
 	var t_graf := _crear_tarjeta("graficas", "Gráficas", true)
 	_construir_pagina_graficas(t_graf.contenido)
@@ -1047,6 +1053,7 @@ func asignar_enlace(e: EnlaceDatos) -> void:
 	enlace = e
 	var ign: Array[Control] = [_b_con]
 	_panel_con.configurar(e, ign)
+	_p_ext.configurar(e)
 	e.estado_cambiado.connect(func(_i: Dictionary): _pintar_enlace())
 	e.fuentes_actualizadas.connect(func(_l: Array): _pintar_enlace())
 	e.aviso.connect(func(t: String, err: bool): _aviso(t, err, 6.0))
