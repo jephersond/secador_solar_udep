@@ -213,7 +213,7 @@ func _construir() -> void:
 	_v_lluvia = _tile(fila1, "Lluvia", 14)
 	_v_suelo = _tile(fila1, "Suelo húm.", 14)
 
-	_detalle.add_child(_cap("Modo"))
+	_detalle.add_child(_cap("Origen del clima"))
 	var fila_modo := HBoxContainer.new()
 	fila_modo.add_theme_constant_override("separation", 5)
 	_detalle.add_child(fila_modo)

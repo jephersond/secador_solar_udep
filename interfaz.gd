@@ -144,7 +144,7 @@ func _construir() -> void:
 	_dialogo.file_mode = FileDialog.FILE_MODE_OPEN_FILE
 	_dialogo.access = FileDialog.ACCESS_FILESYSTEM
 	_dialogo.filters = PackedStringArray(["*.csv, *.txt ; Registros de sensores"])
-	_dialogo.title = "Subir registro de sensores"
+	_dialogo.title = "Abrir registro de sensores"
 	_dialogo.file_selected.connect(func(p: String): datos.cargar_csv(p))
 	add_child(_dialogo)
 
@@ -795,9 +795,6 @@ func _ajustar_barra() -> void:
 
 func _construir_menu() -> void:
 	_menu = PopupMenu.new()
-	_menu.add_item("Subir datos…", 0)
-	_menu.add_item("Abrir carpeta de registros", 4)
-	_menu.add_item("Elegir carpeta de registros…", 5)
 	_menu.add_check_item("Corregir T (ID6 −2,8 · ID4 +1,4)", 1)
 	_menu.add_separator()
 	_menu.add_item("Ocultar interfaz  [H]", 2)
@@ -817,16 +814,25 @@ func _abrir_menu() -> void:
 
 func _clic_menu(id: int) -> void:
 	match id:
-		0: _dialogo.popup_centered(Vector2i(900, 520))
 		1:
 			var i: int = _menu.get_item_index(1)
 			datos.corregir = not _menu.is_item_checked(i)
 		2: _toggle_interfaz()
-		4:
-			var d: String = datos.carpeta_registros()
-			DirAccess.make_dir_recursive_absolute(d)
-			OS.shell_open(d)
-		5: _dlg_carpeta.popup_centered(Vector2i(900, 520))
+
+
+# Las tres acciones de datos viven en el panel Conexión (panel_conexion.gd)
+func _pedir_archivo() -> void:
+	_dialogo.popup_centered(Vector2i(900, 520))
+
+
+func _abrir_carpeta_registros() -> void:
+	var d: String = datos.carpeta_registros()
+	DirAccess.make_dir_recursive_absolute(d)
+	OS.shell_open(d)
+
+
+func _pedir_carpeta() -> void:
+	_dlg_carpeta.popup_centered(Vector2i(900, 520))
 
 
 func _al_correccion(activa: bool) -> void:
@@ -985,6 +991,9 @@ func _construir_enlace_ui() -> void:
 
 	_panel_con = PanelConexion.new()
 	_raiz.add_child(_panel_con)
+	_panel_con.abrir_archivo_pedido.connect(_pedir_archivo)
+	_panel_con.abrir_carpeta_pedida.connect(_abrir_carpeta_registros)
+	_panel_con.elegir_carpeta_pedida.connect(_pedir_carpeta)
 
 	_b_con.pressed.connect(func(): _alternar_panel_con(true))
 	_pintar_enlace()

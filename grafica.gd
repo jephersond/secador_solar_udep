@@ -100,7 +100,7 @@ func _draw() -> void:
 	draw_string(f, Vector2(MI, 14), "%s (%s)" % [titulo, unidad], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, tinta)
 
 	if datos == null or not datos.hay_datos() or not fuente.is_valid():
-		draw_string(f, Vector2(MI, h * 0.5), "Sin datos: usa «Subir datos»", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, gris)
+		draw_string(f, Vector2(MI, h * 0.5), "Sin datos: abre un registro desde Conexión", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, gris)
 		return
 
 	if ids.is_empty():

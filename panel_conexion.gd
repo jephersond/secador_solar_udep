@@ -22,6 +22,10 @@ const PARAMS: Dictionary = {
 	"sd": [{"clave": "archivo", "texto": "Archivo", "dinamico": true, "fmt": "%s"}],
 }
 
+signal abrir_archivo_pedido        # el usuario quiere elegir un registro del disco
+signal abrir_carpeta_pedida        # abrir la carpeta de registros en el explorador
+signal elegir_carpeta_pedida       # cambiar la carpeta de registros
+
 var enlace: EnlaceDatos
 
 var _ignorar: Array[Control] = []     # controles que abren/cierran el panel (no cuentan como "afuera")
@@ -127,8 +131,8 @@ func _texto_estado() -> String:
 		"error":
 			return "Error: %s" % enlace.detalle
 		"desconectado":
-			return "Desconectado. Elige una fuente y pulsa Conectar."
-	return "No encuentro el puente de datos. Ejecútalo en una terminal:  python puente_datos.py"
+			return "Sin conexión en vivo. Abre un registro o conecta el ESP32."
+	return "El puente de datos no responde (solo hace falta para el modo en vivo). Los registros se abren igual."
 
 
 func _color_estado() -> Color:
@@ -167,18 +171,50 @@ func _reconstruir() -> void:
 	_lbl_estado.add_theme_color_override("font_color", _color_estado())
 	_cuerpo.add_child(_lbl_estado)
 
-	# --- lista de fuentes ---
+	# --- fuentes que se pueden seleccionar (las de la lista del puente, sin "sim" ni internet) ---
 	var ids: Array[String] = []
 	for f: Dictionary in enlace.fuentes:
-		ids.append(str(f.get("id", "")))
+		var tipo_f: String = str(f.get("tipo", ""))
+		if tipo_f != "archivo" and tipo_f != "internet":
+			ids.append(str(f.get("id", "")))
 	if not ids.has(_sel):
-		_sel = enlace.fuente if ids.has(enlace.fuente) else (ids[0] if not ids.is_empty() else "")
+		_sel = enlace.fuente if ids.has(enlace.fuente) else ""
+		if _sel == "":
+			for f: Dictionary in enlace.fuentes:
+				if str(f.get("tipo", "")) == "serial":
+					_sel = str(f.get("id", ""))
+					break
 
 	var activa_id: String = ""
 	if enlace.estado == "online" or enlace.estado == "buscando":
 		activa_id = enlace.fuente
+
+	# --- 1) REGISTROS: no necesitan el puente ---
+	_cuerpo.add_child(_seccion("REGISTROS (ARCHIVO)"))
+	_cuerpo.add_child(_fila_accion("Registro de prueba (60 min)", "Registro_60_min.txt", "Cargar", _cargar_prueba))
+	_cuerpo.add_child(_fila_accion("Abrir otro registro…", "CSV o TXT · también puedes arrastrarlo a la ventana",
+			"Elegir…", _pedir_archivo))
 	for f: Dictionary in enlace.fuentes:
+		if str(f.get("tipo", "")) == "sd":
+			_cuerpo.add_child(_fila(f, activa_id))
+
+	# --- 2) EN VIVO: ESP32 por USB (y wifi cuando exista) ---
+	_cuerpo.add_child(_seccion("EN VIVO"))
+	var hay_vivo: bool = false
+	for f: Dictionary in enlace.fuentes:
+		var tipo_v: String = str(f.get("tipo", ""))
+		if tipo_v == "archivo" or tipo_v == "sd" or tipo_v == "internet":
+			continue
+		hay_vivo = true
 		_cuerpo.add_child(_fila(f, activa_id))
+	if not hay_vivo:
+		var vacio := Label.new()
+		vacio.text = "No hay equipos. Conecta el ESP32 por USB y pulsa «Buscar de nuevo»."
+		vacio.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		vacio.custom_minimum_size = Vector2(ANCHO - 28.0, 0.0)
+		vacio.add_theme_font_size_override("font_size", 12)
+		vacio.add_theme_color_override("font_color", Tema.GRIS)
+		_cuerpo.add_child(vacio)
 
 	# --- ajustes de la fuente seleccionada ---
 	for f: Dictionary in enlace.fuentes:
@@ -186,13 +222,96 @@ func _reconstruir() -> void:
 			_agregar_ajustes(f)
 			break
 
-	var pie := Label.new()
-	pie.text = "Solo una fuente puede estar activa a la vez."
-	pie.add_theme_font_size_override("font_size", 11)
-	pie.add_theme_color_override("font_color", Tema.GRIS)
+	# --- pie: carpeta de registros e internet (solo informa) ---
+	var pie := HBoxContainer.new()
+	pie.add_child(_boton_plano("Abrir carpeta de registros", _pedir_abrir_carpeta))
+	pie.add_child(_boton_plano("Cambiar carpeta…", _pedir_elegir_carpeta))
 	_cuerpo.add_child(pie)
 
+	for f: Dictionary in enlace.fuentes:
+		if str(f.get("tipo", "")) == "internet":
+			var ok: bool = bool(f.get("ok", false))
+			var li := Label.new()
+			li.text = "Internet: %s · solo se usa para el clima" % ("disponible" if ok else "sin red")
+			li.add_theme_font_size_override("font_size", 11)
+			li.add_theme_color_override("font_color", Tema.OK if ok else Tema.MAL)
+			_cuerpo.add_child(li)
+			break
+
 	call_deferred("_reubicar")
+
+
+func _seccion(texto: String) -> Label:
+	var l := Label.new()
+	l.text = texto
+	l.add_theme_font_size_override("font_size", 11)
+	l.add_theme_color_override("font_color", Tema.GRIS)
+	return l
+
+
+func _boton_plano(texto: String, accion: Callable) -> Button:
+	var b := Button.new()
+	b.text = texto
+	b.flat = true
+	b.focus_mode = Control.FOCUS_NONE
+	b.add_theme_font_size_override("font_size", 12)
+	b.pressed.connect(accion)
+	return b
+
+
+# Fila con una sola accion (cargar / elegir archivo), sin estado de conexion
+func _fila_accion(titulo: String, detalle_txt: String, texto_btn: String, accion: Callable) -> Control:
+	var pc := PanelContainer.new()
+	var sb := Tema.caja(Color(1, 1, 1, 0.05), Tema.TRANSP, 0, 10.0)
+	sb.content_margin_left = 10.0
+	sb.content_margin_right = 8.0
+	sb.content_margin_top = 6.0
+	sb.content_margin_bottom = 6.0
+	pc.add_theme_stylebox_override("panel", sb)
+
+	var hb := HBoxContainer.new()
+	hb.add_theme_constant_override("separation", 10)
+	pc.add_child(hb)
+
+	var vb := VBoxContainer.new()
+	vb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var nombre := Label.new()
+	nombre.text = titulo
+	vb.add_child(nombre)
+	var detalle := Label.new()
+	detalle.text = detalle_txt
+	detalle.add_theme_font_size_override("font_size", 11)
+	detalle.add_theme_color_override("font_color", Tema.GRIS)
+	detalle.clip_text = true
+	vb.add_child(detalle)
+	hb.add_child(vb)
+
+	var btn := Button.new()
+	btn.text = texto_btn
+	btn.focus_mode = Control.FOCUS_NONE
+	btn.custom_minimum_size = Vector2(96.0, 0.0)
+	btn.pressed.connect(accion)
+	hb.add_child(btn)
+	return pc
+
+
+func _cargar_prueba() -> void:
+	enlace.cargar_csv_directo()
+	cerrar()
+
+
+func _pedir_archivo() -> void:
+	cerrar()
+	abrir_archivo_pedido.emit()
+
+
+func _pedir_abrir_carpeta() -> void:
+	abrir_carpeta_pedida.emit()
+
+
+func _pedir_elegir_carpeta() -> void:
+	cerrar()
+	elegir_carpeta_pedida.emit()
 
 
 func _fila(f: Dictionary, activa_id: String) -> Control:
@@ -262,14 +381,7 @@ func _fila(f: Dictionary, activa_id: String) -> Control:
 	btn.focus_mode = Control.FOCUS_NONE
 	btn.custom_minimum_size = Vector2(96.0, 0.0)
 
-	# Si es el simulador local, botón para cargarlo instantáneo sin esperas
-	if id == "sim":
-		btn.text = "Cargar (60 min)"
-		btn.pressed.connect(func():
-			enlace.cargar_csv_directo()
-			cerrar()
-		)
-	elif activa:
+	if activa:
 		btn.text = "Desconectar"
 		btn.pressed.connect(func(): enlace.desconectar())
 	elif bool(f.get("soportado", false)) and str(f.get("accion", "conectar")) == "importar":
