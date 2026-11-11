@@ -985,8 +985,7 @@ func _al_reproduccion(activa: bool) -> void:
 # ---- Conexion: pildora de estado + panel desplegable ----
 func _construir_enlace_ui() -> void:
 	_pild = PanelConexion.Pildora.new()
-	_pild.tooltip_text = "Estado de la conexión · clic para ver las fuentes"
-	_pild.pressed.connect(func(): _alternar_panel_con(false))
+	_pild.mouse_filter = Control.MOUSE_FILTER_IGNORE      # solo indica el estado; el panel se abre desde el icono de wifi
 	_raiz.add_child(_pild)
 
 	_panel_con = PanelConexion.new()
@@ -995,14 +994,15 @@ func _construir_enlace_ui() -> void:
 	_panel_con.abrir_carpeta_pedida.connect(_abrir_carpeta_registros)
 	_panel_con.elegir_carpeta_pedida.connect(_pedir_carpeta)
 
-	_b_con.pressed.connect(func(): _alternar_panel_con(true))
+	_b_con.tooltip_text = "Conexión y registros"
+	_b_con.pressed.connect(_alternar_panel_con)
 	_pintar_enlace()
 
 
 # Llamar desde principal.gd:  interfaz.asignar_enlace(enlace)
 func asignar_enlace(e: EnlaceDatos) -> void:
 	enlace = e
-	var ign: Array[Control] = [_pild, _b_con]
+	var ign: Array[Control] = [_b_con]
 	_panel_con.configurar(e, ign)
 	e.estado_cambiado.connect(func(_i: Dictionary): _pintar_enlace())
 	e.fuentes_actualizadas.connect(func(_l: Array): _pintar_enlace())
@@ -1010,15 +1010,11 @@ func asignar_enlace(e: EnlaceDatos) -> void:
 	_pintar_enlace()
 
 
-func _alternar_panel_con(desde_boton: bool) -> void:
+func _alternar_panel_con() -> void:
 	if _panel_con.visible:
 		_panel_con.cerrar()
 		return
-	if desde_boton:
-		_panel_con.abrir(_b_con.get_global_rect().end.x, true, _barra.get_global_rect().position.y)
-	else:
-		var r: Rect2 = _pild.get_global_rect()
-		_panel_con.abrir(r.position.x, false, r.position.y)
+	_panel_con.abrir(_b_con.get_global_rect().end.x, true, _barra.get_global_rect().position.y)
 
 
 func _pintar_enlace() -> void:
