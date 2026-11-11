@@ -22,6 +22,10 @@ const TOP_TARJETA_NORMAL: float = 66.0
 const TOP_TARJETA_CON_CLIMA: float = 126.0
 const TOP_TARJETA_AMPLIA: float = 16.0
 
+const COL_OK: Color = Color("#2fb457")
+const COL_ALARMA: Color = Color("#d62828")
+const COL_RETENIDO: Color = Color("#e0a030")     # dato retenido: esperando el siguiente envio
+const COL_SIN_DATO: Color = Color("#6b7280")     # NaN / esperando el primer dato
 const VELOCIDADES: Array[float] = [1.0, 10.0, 60.0, 120.0, 300.0]
 const VEL_TEXTOS: Array[String] = ["x1", "x10", "x60", "x120", "x300"]
 
@@ -77,6 +81,7 @@ var _lbl_reloj: Label
 var _shown: Array[int] = []
 var _sucio: bool = true
 var _acum: float = 0.0
+var _t_vivo: float = 0.0                       # refresco de 1 s en modo en vivo (la "edad" de los datos avanza sola)
 var _amplio: bool = false
 
 var _graf: Array[Grafica] = []
@@ -392,8 +397,8 @@ func _construir_pagina_diagnostico(padre: VBoxContainer) -> void:
 	padre.add_child(_kpi)
 
 	_tree_d = _nuevo_tree(
-		["ID", "Sensor", "Estado", "Lect. OK", "Fallos", "% éxito", "Valor al minuto", "Chequeo"],
-		[34, 150, 100, 62, 52, 60, 150, 120])
+		["ID", "Sensor", "Estado", "Último dato", "Lect. OK", "Fallos", "% éxito", "Valor al minuto", "Chequeo"],
+		[34, 150, 100, 78, 62, 52, 60, 150, 120])
 	padre.add_child(_tree_d)
 
 
@@ -525,10 +530,11 @@ func _construir_rotulos_hud() -> void:
 		hb.add_theme_constant_override("separation", 6)
 		panel.add_child(hb)
 
+		sb.border_color = COL_SIN_DATO
 		var punto := ColorRect.new()
 		punto.custom_minimum_size = Vector2(7, 7)
 		punto.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		punto.color = Color("#2fb457")
+		punto.color = COL_SIN_DATO
 		hb.add_child(punto)
 
 		var vb := VBoxContainer.new()
@@ -536,7 +542,7 @@ func _construir_rotulos_hud() -> void:
 		hb.add_child(vb)
 
 		var lbl_t := Label.new()
-		lbl_t.text = "--.- °C"
+		lbl_t.text = "NaN"
 		lbl_t.add_theme_font_size_override("font_size", 12)
 		lbl_t.add_theme_color_override("font_color", Color.WHITE)
 		vb.add_child(lbl_t)
@@ -553,6 +559,7 @@ func _construir_rotulos_hud() -> void:
 			"sb": sb,
 			"punto": punto,
 			"lbl_t": lbl_t,
+			"lbl_n": lbl_n,
 			"pos3d": coords_3d[id]
 		}
 
@@ -584,10 +591,25 @@ func _actualizar_posiciones_rotulos_hud() -> void:
 
 		if datos.hay_datos():
 			var v: Dictionary = datos.valor(id, m)
-			var es_alarma: bool = datos.en_alarma(v["T"], v["H"])
-			var col_estado: Color = Color("#d62828") if es_alarma else Color("#2fb457")
+			var estado: int = datos.estado_sensor(id)
+			var col_estado: Color = COL_OK
+			var txt_t: String = "%.1f °C" % v["T"]
+			var txt_n: String = NOMBRES_SENSORES[id]
+			if is_nan(v["T"]):
+				# sin dato: esperando el primero, o sin señal (NaN)
+				col_estado = COL_SIN_DATO
+				txt_t = "…" if estado == DatosSensores.Estado.ESPERANDO else "NaN"
+				if estado == DatosSensores.Estado.SIN_SENAL:
+					txt_n += " · sin señal"
+			elif estado == DatosSensores.Estado.RETENIDO:
+				# se mantiene el ultimo valor hasta que llegue el siguiente
+				col_estado = COL_RETENIDO
+				txt_n += " · hace %.0f s" % datos.edad_s(id)
+			elif datos.en_alarma(v["T"], v["H"]):
+				col_estado = COL_ALARMA
 
-			item["lbl_t"].text = "%.1f °C" % v["T"]
+			item["lbl_t"].text = txt_t
+			item["lbl_n"].text = txt_n
 			item["punto"].color = col_estado
 			item["sb"].border_color = col_estado
 
@@ -1158,6 +1180,12 @@ func _process(delta: float) -> void:
 	_actualizar_posiciones_rotulos_hud()
 	_actualizar_pildora_pos()
 
+	if datos.en_vivo:
+		_t_vivo += delta
+		if _t_vivo >= 1.0:
+			_t_vivo = 0.0
+			_sucio = true
+
 	_acum += delta
 	if _sucio and _acum >= 0.1:
 		_acum = 0.0
@@ -1201,6 +1229,14 @@ func _llenar_diag() -> void:
 		int(DatosSensores.T_MIN), int(DatosSensores.T_MAX),
 		int(DatosSensores.H_MIN), int(DatosSensores.H_MAX)]
 		
+	if datos.en_vivo:
+		var edad_min: float = INF
+		for id_k in datos.series.keys():
+			edad_min = minf(edad_min, datos.edad_s(int(id_k)))
+		_kpi.text += " · EN VIVO: ciclo %.1f s" % datos.ciclo_vivo_s()
+		if not is_inf(edad_min):
+			_kpi.text += ", último dato hace %.0f s" % edad_min
+
 	var ids: Array = datos.series.keys()
 	ids.sort()
 	for id: int in ids:
@@ -1214,7 +1250,7 @@ func _llenar_diag() -> void:
 		match tipo:
 			"sonda", "aire":
 				var v: Dictionary = datos.valor(id, m)
-				valor = "%.1f °C · %.1f %%" % [v["T"], v["H"]]
+				valor = _fnum(v["T"], "%.1f °C") + " · " + _fnum(v["H"], "%.1f %%")
 				if datos.en_alarma(v["T"], v["H"]):
 					estado = "ALARMA"
 					col = Tema.MAL
@@ -1222,7 +1258,7 @@ func _llenar_diag() -> void:
 					chk = "Valor congelado"
 					col = Tema.AVISO
 			"viento":
-				valor = "%.1f m/s" % datos.viento(id, m)
+				valor = _fnum(datos.viento(id, m), "%.1f m/s")
 				var mx: float = 0.0
 				for x: float in datos.series[id]["V"]:
 					if not is_nan(x):
@@ -1237,15 +1273,35 @@ func _llenar_diag() -> void:
 				valor = "crudo %.0f / %.0f" % [
 					datos._interp(datos.series[id]["a"], m), datos._interp(datos.series[id]["b"], m)]
 					
+		# En vivo, el estado de la senal manda sobre el chequeo del valor
+		var ultimo: String = "—"
+		if datos.en_vivo:
+			var ed: float = datos.edad_s(id)
+			ultimo = "—" if is_inf(ed) else "hace %.0f s" % ed
+			match datos.estado_sensor(id):
+				DatosSensores.Estado.ESPERANDO:
+					estado = "Esperando"
+					col = Tema.GRIS
+				DatosSensores.Estado.RETENIDO:
+					estado = "Retenido"
+					col = Tema.AVISO
+				DatosSensores.Estado.SIN_SENAL:
+					estado = "Sin señal"
+					col = Tema.MAL
+
 		var it: TreeItem = _item(_tree_d, _it_d, id)
 		var textos: Array[String] = [
-			str(id), datos.nombre(id), estado, str(ok), str(n - ok),
+			str(id), datos.nombre(id), estado, ultimo, str(ok), str(n - ok),
 			"%.0f" % (100.0 * ok / maxf(n, 1)), valor, chk
 		]
 		for c: int in textos.size():
 			it.set_text(c, textos[c])
 		it.set_custom_color(2, col)
-		it.set_custom_color(7, col)
+		it.set_custom_color(8, col)
+
+
+func _fnum(v: float, fmt: String) -> String:
+	return "NaN" if is_nan(v) else fmt % v
 
 
 func _llenar_tabla() -> void:
@@ -1253,9 +1309,9 @@ func _llenar_tabla() -> void:
 	for id: int in datos.ids_termo():
 		var v: Dictionary = datos.valor(id, m)
 		var td: float = datos.punto_rocio(v["T"], v["H"])
-		var dt: String = "—" if id == DatosSensores.AIRE else "%+.1f" % datos.delta_vs_aire(id, m)
+		var dt: String = "—" if id == DatosSensores.AIRE else _fnum(datos.delta_vs_aire(id, m), "%+.1f")
 		var it: TreeItem = _item(_tree_t, _it_t, id)
-		var textos: Array[String] = [str(id), datos.nombre(id), "%.1f" % v["T"], "%.1f" % v["H"], dt, "%.1f" % td]
+		var textos: Array[String] = [str(id), datos.nombre(id), _fnum(v["T"], "%.1f"), _fnum(v["H"], "%.1f"), dt, _fnum(td, "%.1f")]
 		for c: int in textos.size():
 			it.set_text(c, textos[c])
 

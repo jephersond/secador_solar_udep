@@ -26,6 +26,17 @@ const T_MAX := 70.0
 const H_MIN := 5.0
 const H_MAX := 95.0
 
+# Estado de cada sensor
+#   REGISTRO   : se esta viendo un archivo
+#   ESPERANDO  : modo en vivo, aun no llega su primer dato
+#   EN_VIVO    : dato reciente
+#   RETENIDO   : no llego dato nuevo; se mantiene el ultimo valor hasta que se refresque
+#   SIN_SENAL  : paso demasiado tiempo sin dato -> NaN
+enum Estado { REGISTRO, ESPERANDO, EN_VIVO, RETENIDO, SIN_SENAL }
+const ESPERA_INICIAL_S := 60.0     # al activar el modo en vivo: maximo esperando el primer dato
+const FRESCO_MIN_S := 10.0         # "en vivo" si el dato tiene menos de esto (o 1,5 ciclos, lo que sea mayor)
+const RETENER_MIN_S := 18.0        # se retiene el ultimo valor hasta esto (o 3 ciclos, lo que sea mayor)
+
 const DIR_REGISTROS := "user://registros"
 const ARCHIVO_ULTIMO := "user://ultimo_registro.txt"
 const ARCHIVO_CONFIG := "user://config_visor.cfg"
@@ -59,6 +70,9 @@ var velocidad: float = 60.0
 var en_vivo: bool = false
 var seguir_vivo: bool = true      # el cursor sigue a la ultima lectura
 var _ult_ts: float = -INF
+var _t_inicio_vivo_ms: int = 0
+var _ultimo_ok_ms: Dictionary = {}    # id -> instante (ms del PC) de su ultima lectura valida
+var _llegadas_ms: Array[int] = []     # instantes de llegada de los ultimos ciclos
 
 var corregir: bool = false:
 	set(v):
@@ -314,19 +328,67 @@ func _interp(arr: PackedFloat32Array, m: float) -> float:
 	return (a if u < 0.5 else b) if (is_nan(a) or is_nan(b)) else lerpf(a, b, u)
 
 
+# Igual que _interp, pero en vivo y en la ultima lectura: si el sensor no respondio en este
+# ciclo se mantiene su ultimo valor hasta que se refresque o pase demasiado tiempo (SIN_SENAL).
+func _interp_vivo(arr: PackedFloat32Array, m: float, id: int) -> float:
+	var v := _interp(arr, m)
+	if not is_nan(v) or not en_vivo or m < duracion - 0.0001:
+		return v
+	var est: int = estado_sensor(id)
+	if est != Estado.EN_VIVO and est != Estado.RETENIDO:
+		return v
+	var i := arr.size() - 1
+	var tope := maxi(0, arr.size() - 60)
+	while i >= tope:
+		if not is_nan(arr[i]):
+			return arr[i]
+		i -= 1
+	return v
+
+
+# Segundos entre ciclos completos, medidos con el reloj del PC (0 si aun no hay dos ciclos)
+func ciclo_vivo_s() -> float:
+	var n := _llegadas_ms.size()
+	if n < 2:
+		return 0.0
+	return float(_llegadas_ms[n - 1] - _llegadas_ms[0]) / 1000.0 / float(n - 1)
+
+
+# Segundos desde la ultima lectura valida del sensor (INF si aun no llego ninguna)
+func edad_s(id: int) -> float:
+	if not _ultimo_ok_ms.has(id):
+		return INF
+	return float(Time.get_ticks_msec() - int(_ultimo_ok_ms[id])) / 1000.0
+
+
+func estado_sensor(id: int) -> int:
+	if not en_vivo:
+		return Estado.REGISTRO
+	var edad := edad_s(id)
+	if is_inf(edad):
+		var espera := float(Time.get_ticks_msec() - _t_inicio_vivo_ms) / 1000.0
+		return Estado.ESPERANDO if espera < ESPERA_INICIAL_S else Estado.SIN_SENAL
+	var ciclo := ciclo_vivo_s()
+	if edad <= maxf(FRESCO_MIN_S, 1.5 * ciclo):
+		return Estado.EN_VIVO
+	if edad <= maxf(RETENER_MIN_S, 3.0 * ciclo):
+		return Estado.RETENIDO
+	return Estado.SIN_SENAL
+
+
 func valor(id: int, m: float) -> Dictionary:
 	if not series.has(id):
 		return {"T": NAN, "H": NAN}
 	var s: Dictionary = series[id]
 	var t_arr: PackedFloat32Array = s["T_corr"] if (corregir and s.has("T_corr")) else s["T"]
-	return {"T": _interp(t_arr, m), "H": _interp(s["H"], m)}
+	return {"T": _interp_vivo(t_arr, m, id), "H": _interp_vivo(s["H"], m, id)}
 
 
 func viento(id: int, m: float) -> float:
-	return _interp(series[id]["V"], m) if series.has(id) else NAN
+	return _interp_vivo(series[id]["V"], m, id) if series.has(id) else NAN
 
 func presion(m: float) -> float:
-	return _interp(series[AIRE]["P"], m) if series.has(AIRE) else NAN
+	return _interp_vivo(series[AIRE]["P"], m, AIRE) if series.has(AIRE) else NAN
 
 func delta_vs_aire(id: int, m: float) -> float:
 	return valor(id, m)["T"] - valor(AIRE, m)["T"]
@@ -463,6 +525,9 @@ func iniciar_vivo() -> void:
 	inicio_texto = ""
 	archivo = "(en vivo)"
 	_ult_ts = -INF
+	_t_inicio_vivo_ms = Time.get_ticks_msec()
+	_ultimo_ok_ms = {}
+	_llegadas_ms = []
 	seguir_vivo = true
 	en_vivo = true
 	modo_vivo_cambiado.emit(true)
@@ -507,6 +572,7 @@ func agregar_lectura(msg: Dictionary) -> bool:
 				_agregar_a(id, NAN, NAN, NAN)
 
 	# una lectura por cada sensor conocido (los que faltan en el mensaje, NaN)
+	var ahora_ms: int = Time.get_ticks_msec()
 	for id in series.keys():
 		var regs = ids.get(str(id), null)
 		var r1 := NAN
@@ -516,7 +582,12 @@ func agregar_lectura(msg: Dictionary) -> bool:
 			if regs.size() > 0 and regs[0] != null: r1 = float(regs[0])
 			if regs.size() > 1 and regs[1] != null: r2 = float(regs[1])
 			if regs.size() > 2 and regs[2] != null: r3 = float(regs[2])
+		if not (is_nan(r1) and is_nan(r2) and is_nan(r3)):
+			_ultimo_ok_ms[id] = ahora_ms
 		_agregar_a(id, r1, r2, r3)
+	_llegadas_ms.append(ahora_ms)
+	if _llegadas_ms.size() > 8:
+		_llegadas_ms.pop_front()
 
 	t_min.append((ts - t0_unix) / 60.0)
 	_ult_ts = ts

@@ -10,6 +10,7 @@ const FILTRO := "malla"
 var datos: DatosSensores
 var secador: Node3D
 var _mats := {}
+var _t_vivo: float = 0.0
 
 
 func _ready() -> void:
@@ -42,6 +43,15 @@ func _color(t: float) -> Color:
 	var k := clampf((t - T_MIN) / (T_MAX - T_MIN), 0.0, 1.0) * 3.0
 	var i := clampi(floori(k), 0, 2)
 	return GRAD[i].lerp(GRAD[i + 1], k - float(i))
+
+
+func _process(delta: float) -> void:
+	# En vivo, un sensor puede pasar a "sin señal" sin que llegue ninguna lectura nueva
+	if datos != null and datos.en_vivo:
+		_t_vivo += delta
+		if _t_vivo >= 1.0:
+			_t_vivo = 0.0
+			_refrescar()
 
 
 func _refrescar(_x = null) -> void:
