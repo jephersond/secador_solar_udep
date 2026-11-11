@@ -59,9 +59,9 @@ func _process(delta: float) -> void:
 
 
 func _refrescar(_x = null) -> void:
-	var visibles: bool = datos.en_vivo or clima == null or clima.modo_actual == Clima.Modo.REGISTRO
-	if not datos.hay_datos() and visibles:
-		return
+	# gris (NaN) si no se esta leyendo nada: sin registro, sin modo en vivo o clima fuera de Registro
+	var visibles: bool = datos.hay_datos() and (datos.en_vivo or clima == null \
+		or clima.modo_actual == Clima.Modo.REGISTRO)
 	for n in _mats:
 		var c := _color(datos.valor(MAPA[n], datos.minuto)["T"] if visibles else NAN)
 		for mat in _mats[n]:

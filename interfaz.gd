@@ -600,13 +600,19 @@ func _actualizar_posiciones_rotulos_hud() -> void:
 		panel.visible = true
 		panel.position = pos_2d - Vector2(panel.size.x * 0.5, panel.size.y + 12.0)
 
-		if not _datos_visibles():
-			# fuera de en vivo / registro no se esta leyendo nada: NaN y sin color de alarma
+		if not _datos_visibles() or (not datos.hay_datos() and not datos.en_vivo):
+			# sin registro ni modo en vivo no se esta leyendo nada: NaN y sin color de alarma
 			item["lbl_t"].text = "NaN"
 			item["lbl_n"].text = NOMBRES_SENSORES[id]
 			item["punto"].color = COL_SIN_DATO
 			item["sb"].border_color = COL_SIN_DATO
-		elif datos.hay_datos():
+		elif not datos.hay_datos():
+			# en vivo, esperando el primer ciclo
+			item["lbl_t"].text = "…"
+			item["lbl_n"].text = NOMBRES_SENSORES[id]
+			item["punto"].color = COL_SIN_DATO
+			item["sb"].border_color = COL_SIN_DATO
+		else:
 			var v: Dictionary = datos.valor(id, m)
 			var estado: int = datos.estado_sensor(id)
 			var col_estado: Color = COL_OK
@@ -793,6 +799,7 @@ func _construir_barra() -> void:
 	f.add_child(_b_volver)
 
 	_lbl_min = Label.new()
+	_lbl_min.text = "Min –"
 	_lbl_min.custom_minimum_size = Vector2(76, 0)
 	_lbl_min.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	f.add_child(_lbl_min)
@@ -808,6 +815,7 @@ func _construir_barra() -> void:
 	f.add_child(_slider)
 
 	_lbl_reloj = Label.new()
+	_lbl_reloj.text = "Sin datos"
 	_lbl_reloj.custom_minimum_size = Vector2(190, 0)
 	_lbl_reloj.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	f.add_child(_lbl_reloj)

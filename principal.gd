@@ -168,8 +168,8 @@ func _ready() -> void:
 	clima.modo_cambiado.connect(_al_cambiar_modo)
 	datos.modo_vivo_cambiado.connect(_al_modo_vivo)
 
-	var ruta_inicial: String = datos.ultimo_registro()
-	datos.cargar_csv(ruta_inicial if ruta_inicial != "" else "res://datos/Registro_60_min.txt")
+	# Al abrir NO se carga ningun registro: sin datos, los rotulos muestran NaN y las bandejas salen
+	# grises hasta que se cargue un registro o se active el modo en vivo (panel Conexion).
 
 	# 4. Interfaz y gráficos
 	interfaz = Interfaz.new()
@@ -708,7 +708,10 @@ func _al_cargar_registro(_info: Dictionary) -> void:
 	_minuto_actual = 0.0
 	var t: Dictionary = datos.instante(0.0)
 	var dur_h: float = maxf(datos.duracion / 60.0, 1.0)
-	if clima.modo_actual == Clima.Modo.REGISTRO:
+	# Al abrir un registro el clima pasa a Registro: es lo que hace visibles los datos de los sensores
+	if _listo and not datos.en_vivo and clima.modo_actual != Clima.Modo.REGISTRO:
+		clima.cambiar_modo(Clima.Modo.REGISTRO)
+	elif clima.modo_actual == Clima.Modo.REGISTRO:
 		clima.fijar_instante(int(t["doy"]), float(t["hora"]), str(t["fecha"]))
 		enlace.pedir_clima(str(t["iso"]), float(t["hora"]), dur_h)
 
