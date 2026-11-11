@@ -26,6 +26,7 @@ var _udp := PacketPeerUDP.new()
 var _ult_msg_ms := 0
 var _pid_puente: int = -1
 var _acum_ping: float = 0.0
+var _ruta_previa: String = ""                 # registro que se veia antes de activar el modo en vivo
 var _puente_lanzado: bool = false             # alguna vez se pudo lanzar el puente
 var _ult_relanzo_ms: int = 0
 
@@ -146,9 +147,13 @@ func _aplicar_estado(nuevo: String, f: String, det: String, n: int) -> void:
 		print("[ENLACE] %s -> %s %s %s" % [antes, nuevo, f, det])
 		if datos != null:
 			if nuevo == "online":
-				datos.iniciar_vivo()
-			elif antes == "online":
+				if not datos.en_vivo:
+					datos.iniciar_vivo()
+			elif datos.en_vivo and (nuevo == "desconectado" or nuevo == "error" or nuevo == "sin_puente"):
 				datos.terminar_vivo()
+				# Si no llegó ningún dato (falló al conectar), se vuelve al registro que se veía
+				if not datos.hay_datos():
+					_restaurar_registro_previo()
 	estado_cambiado.emit({"estado": estado, "fuente": fuente, "detalle": detalle, "lecturas": lecturas})
 
 
@@ -180,6 +185,22 @@ func buscar() -> void:
 
 func conectar(id_fuente: String, params: Dictionary = {}) -> void:
 	_cmd({"cmd": "conectar", "fuente": id_fuente, "params": params})
+
+
+# Activa el modo en vivo: la interfaz entra en vivo al instante (sensores "esperando datos")
+# en vez de esperar al primer ciclo, y se recuerda el registro que se veia por si falla.
+func activar_vivo(id_fuente: String, params: Dictionary = {}) -> void:
+	if datos != null and not datos.en_vivo:
+		var previa: String = datos.archivo
+		if previa != "" and previa != "(en vivo)":
+			_ruta_previa = previa
+		datos.iniciar_vivo()
+	conectar(id_fuente, params)
+
+
+func _restaurar_registro_previo() -> void:
+	if datos != null and _ruta_previa != "" and FileAccess.file_exists(_ruta_previa):
+		datos.cargar_csv(_ruta_previa)
 
 
 func desconectar() -> void:

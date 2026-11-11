@@ -70,6 +70,9 @@ var _toast: Label
 var _id_aviso: int = 0
 var _b_play: BotonIcono
 var _b_reset: BotonIcono
+var _b_vel: OptionButton
+var _lbl_vivo: Label
+var _b_volver: Button
 var _b_mas: BotonIcono
 var _b_con: BotonIcono                 # boton de conexion (junto a los tres puntos)
 var _pild: PanelConexion.Pildora       # pildora de estado, sobre la barra
@@ -744,14 +747,31 @@ func _construir_barra() -> void:
 	_b_reset.pressed.connect(func(): datos.reiniciar())
 	f.add_child(_b_reset)
 
-	var ov := OptionButton.new()
-	ov.focus_mode = Control.FOCUS_NONE
-	ov.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_b_vel = OptionButton.new()
+	_b_vel.focus_mode = Control.FOCUS_NONE
+	_b_vel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	for t: String in VEL_TEXTOS:
-		ov.add_item(t)
-	ov.select(2)
-	ov.item_selected.connect(func(i: int): datos.velocidad = VELOCIDADES[i])
-	f.add_child(ov)
+		_b_vel.add_item(t)
+	_b_vel.select(2)
+	_b_vel.item_selected.connect(func(i: int): datos.velocidad = VELOCIDADES[i])
+	f.add_child(_b_vel)
+
+	_lbl_vivo = Label.new()
+	_lbl_vivo.text = "● EN VIVO"
+	_lbl_vivo.add_theme_color_override("font_color", Tema.OK)
+	_lbl_vivo.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_lbl_vivo.visible = false
+	f.add_child(_lbl_vivo)
+
+	_b_volver = Button.new()
+	_b_volver.text = "Volver a vivo"
+	_b_volver.focus_mode = Control.FOCUS_NONE
+	_b_volver.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_b_volver.visible = false
+	_b_volver.pressed.connect(func():
+		datos.seguir_vivo = true
+		datos.set_minuto(datos.duracion))
+	f.add_child(_b_volver)
 
 	_lbl_min = Label.new()
 	_lbl_min.custom_minimum_size = Vector2(76, 0)
@@ -988,6 +1008,7 @@ func _al_fallar(msg: String) -> void:
 
 
 func _al_minuto(m: float) -> void:
+	_b_volver.visible = datos.en_vivo and not datos.seguir_vivo
 	_slider.set_value_no_signal(m)
 	_lbl_min.text = "Min %.1f" % m
 	_lbl_reloj.text = _reloj(m)
@@ -1072,6 +1093,13 @@ func _actualizar_pildora_pos() -> void:
 
 # ---- Modo en vivo (lecturas que llegan del puente Python) ----
 func _al_vivo(activo: bool) -> void:
+	# En vivo no hay reproducir/reiniciar/velocidad: se muestra la insignia
+	_b_play.visible = not activo
+	_b_reset.visible = not activo
+	_b_vel.visible = not activo
+	_lbl_vivo.visible = activo
+	if not activo:
+		_b_volver.visible = false
 	if activo:
 		_tree_d.clear()
 		_it_d.clear()

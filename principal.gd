@@ -166,6 +166,7 @@ func _ready() -> void:
 	# enlace_datos.conectar("sim", {"velocidad": 10})
 
 	clima.modo_cambiado.connect(_al_cambiar_modo)
+	datos.modo_vivo_cambiado.connect(_al_modo_vivo)
 
 	var ruta_inicial: String = datos.ultimo_registro()
 	datos.cargar_csv(ruta_inicial if ruta_inicial != "" else "res://datos/Registro_60_min.txt")
@@ -725,6 +726,17 @@ func _al_minuto_registro(m: float) -> void:
 	if clima.modo_actual == Clima.Modo.REGISTRO:
 		var t: Dictionary = datos.instante(m)
 		clima.fijar_instante(int(t["doy"]), float(t["hora"]), str(t["fecha"]))
+
+
+# En vivo el clima debe ser el real de ahora (Auto); al salir se vuelve a Registro
+func _al_modo_vivo(activo: bool) -> void:
+	if not _listo:
+		return
+	if activo:
+		if clima.modo_actual != Clima.Modo.AUTO:
+			clima.cambiar_modo(Clima.Modo.AUTO)
+	elif clima.modo_actual != Clima.Modo.REGISTRO and datos.hay_datos():
+		clima.cambiar_modo(Clima.Modo.REGISTRO)
 
 
 func _al_cambiar_modo(nuevo_modo: int) -> void:

@@ -127,11 +127,11 @@ func _texto_estado() -> String:
 		"online":
 			return "Online · %s · %d lecturas" % [enlace.nombre_de(enlace.fuente), enlace.lecturas]
 		"buscando":
-			return "Conectando a %s…" % enlace.nombre_de(enlace.fuente)
+			return "Conectando a %s… puede tardar hasta 1 minuto en llegar el primer dato." % enlace.nombre_de(enlace.fuente)
 		"error":
 			return "Error: %s" % enlace.detalle
 		"desconectado":
-			return "Sin conexión en vivo. Abre un registro o conecta el ESP32."
+			return "Sin conexión en vivo. Abre un registro o activa el modo en vivo."
 	return "El puente de datos no responde (solo hace falta para el modo en vivo). Los registros se abren igual."
 
 
@@ -199,7 +199,7 @@ func _reconstruir() -> void:
 			_cuerpo.add_child(_fila(f, activa_id))
 
 	# --- 2) EN VIVO: ESP32 por USB (y wifi cuando exista) ---
-	_cuerpo.add_child(_seccion("EN VIVO"))
+	_cuerpo.add_child(_seccion("EN VIVO (ESP32) · al activar, el clima pasa a Auto"))
 	var hay_vivo: bool = false
 	for f: Dictionary in enlace.fuentes:
 		var tipo_v: String = str(f.get("tipo", ""))
@@ -388,8 +388,8 @@ func _fila(f: Dictionary, activa_id: String) -> Control:
 		btn.text = "Importar"
 		btn.pressed.connect(func(): enlace.importar(id, _params_de(f)))
 	elif bool(f.get("soportado", false)):
-		btn.text = "Conectar"
-		btn.pressed.connect(func(): enlace.conectar(id, _params_de(f)))
+		btn.text = "Activar"
+		btn.pressed.connect(func(): enlace.activar_vivo(id, _params_de(f)))
 	else:
 		btn.text = "Pronto"
 		btn.disabled = true
