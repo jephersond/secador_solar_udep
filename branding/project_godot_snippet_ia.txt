@@ -1,0 +1,12 @@
+; En project.godot, dentro de [application]:
+config/name="Visor Secador Solar UDEP"
+config/icon="res://branding/icon_ia.png"
+boot_splash/bg_color=Color(0.929, 0.859, 0.78, 1)   ; #EDDBC7, mismo tono que el borde del splash
+boot_splash/image="res://branding/splash_ia.png"
+boot_splash/fullsize=true
+boot_splash/use_filter=true
+
+; Exportar > Windows Desktop > Application:
+;   Icon = res://branding/icon_ia.ico   (requiere rcedit)
+;   Product Name = Visor Secador UDEP
+;   Company Name = UDEP - Proyectos IME Grupo 5

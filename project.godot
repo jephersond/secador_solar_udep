@@ -13,7 +13,9 @@ config_version=5
 config/name="Secador_Solar_UDEP"
 run/main_scene="uid://dlvw5cejbq53f"
 config/features=PackedStringArray("4.8", "Forward Plus")
-config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.92941177, 0.85882354, 0.78039217, 1)
+boot_splash/image="uid://b77i55fcup52e"
+config/icon="uid://mmilpso3cei5"
 
 [display]
 
