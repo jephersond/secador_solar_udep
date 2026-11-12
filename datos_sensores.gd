@@ -84,6 +84,7 @@ func _ready() -> void:
 	var cfg := ConfigFile.new()
 	if cfg.load(ARCHIVO_CONFIG) == OK:
 		dir_registros = str(cfg.get_value("registros", "carpeta", ""))
+	carpeta_registros()      # crea la carpeta "registros" al abrir, para que siempre exista
 
 
 # ======================================================================
