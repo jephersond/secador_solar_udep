@@ -84,7 +84,8 @@ func _ready() -> void:
 	var cfg := ConfigFile.new()
 	if cfg.load(ARCHIVO_CONFIG) == OK:
 		dir_registros = str(cfg.get_value("registros", "carpeta", ""))
-	carpeta_registros()      # crea la carpeta "registros" al abrir, para que siempre exista
+	# crea la carpeta "registros" al abrir, para que siempre exista
+	print("[DATOS] Carpeta de registros: ", carpeta_registros())
 
 
 # ======================================================================
@@ -483,7 +484,9 @@ func carpeta_registros() -> String:
 	# Por defecto: carpeta "registros" junto al ejecutable (o al proyecto, en el editor)
 	var d: String = _carpeta_base().path_join("registros")
 	if not DirAccess.dir_exists_absolute(d):
-		DirAccess.make_dir_recursive_absolute(d)
+		var err: int = DirAccess.make_dir_recursive_absolute(d)
+		if err != OK:
+			push_warning("[DATOS] No pude crear la carpeta de registros '%s' (error %d)" % [d, err])
 		# evita que el editor de Godot importe los CSV de esta carpeta como traducciones
 		var g := FileAccess.open(d.path_join(".gdignore"), FileAccess.WRITE)
 		if g != null:
