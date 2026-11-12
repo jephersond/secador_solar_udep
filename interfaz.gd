@@ -164,6 +164,8 @@ func _construir() -> void:
 	_dlg_carpeta.title = "Elegir carpeta de registros"
 	_dlg_carpeta.dir_selected.connect(func(p: String):
 		datos.set_carpeta_registros(p)
+		if enlace != null:
+			enlace.enviar_carpeta(p)
 		_aviso("Los registros se guardarán en: " + p, false, 5.0))
 	add_child(_dlg_carpeta)
 

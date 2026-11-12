@@ -119,6 +119,8 @@ func _iniciar_puente_python() -> void:
 			return
 
 	var args := PackedStringArray([script, "--registrar"])
+	if datos != null:
+		args.append_array(["--carpeta-registros", datos.carpeta_registros()])
 	_pid_puente = OS.create_process("python", args, false)
 	if _pid_puente <= 0:
 		_pid_puente = OS.create_process("py", args, false)
@@ -210,6 +212,11 @@ func _restaurar_registro_previo() -> void:
 # Solo funciona con la conexion serial en vivo.
 func enviar_extractor(linea: String) -> void:
 	_cmd({"cmd": "extractor", "linea": linea})
+
+
+# Avisa al puente de la carpeta donde guardar las sesiones en vivo
+func enviar_carpeta(ruta: String) -> void:
+	_cmd({"cmd": "carpeta", "ruta": ruta})
 
 
 func desconectar() -> void:

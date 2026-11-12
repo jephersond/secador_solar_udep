@@ -9,3 +9,6 @@ __pycache__/
 # Temporales y respaldos
 *.tmp
 *.bak
+
+# Registros generados al usar el visor (datos de cada PC)
+/registros/

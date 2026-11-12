@@ -37,7 +37,6 @@ const ESPERA_INICIAL_S := 60.0     # al activar el modo en vivo: maximo esperand
 const FRESCO_MIN_S := 10.0         # "en vivo" si el dato tiene menos de esto (o 1,5 ciclos, lo que sea mayor)
 const RETENER_MIN_S := 18.0        # se retiene el ultimo valor hasta esto (o 3 ciclos, lo que sea mayor)
 
-const DIR_REGISTROS := "user://registros"
 const ARCHIVO_ULTIMO := "user://ultimo_registro.txt"
 const ARCHIVO_CONFIG := "user://config_visor.cfg"
 
@@ -480,7 +479,21 @@ func reiniciar() -> void:
 func carpeta_registros() -> String:
 	if dir_registros != "" and DirAccess.dir_exists_absolute(dir_registros):
 		return dir_registros
-	return ProjectSettings.globalize_path(DIR_REGISTROS)
+	# Por defecto: carpeta "registros" junto al ejecutable (o al proyecto, en el editor)
+	var d: String = _carpeta_base().path_join("registros")
+	if not DirAccess.dir_exists_absolute(d):
+		DirAccess.make_dir_recursive_absolute(d)
+		# evita que el editor de Godot importe los CSV de esta carpeta como traducciones
+		var g := FileAccess.open(d.path_join(".gdignore"), FileAccess.WRITE)
+		if g != null:
+			g.close()
+	return d
+
+
+func _carpeta_base() -> String:
+	if OS.has_feature("editor"):
+		return ProjectSettings.globalize_path("res://")
+	return OS.get_executable_path().get_base_dir()
 
 func set_carpeta_registros(ruta: String) -> void:
 	dir_registros = ruta

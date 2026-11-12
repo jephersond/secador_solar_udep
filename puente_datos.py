@@ -449,7 +449,7 @@ class Puente:
         # Evita que Godot importe los CSV de esta carpeta como traducciones
         with open(os.path.join(self.dir_registros, ".gdignore"), "a"):
             pass
-        ruta = os.path.join(self.dir_registros, f"Registro_{datetime.now():%Y%m%d_%H%M%S}.csv")
+        ruta = os.path.join(self.dir_registros, f"EnVivo_{datetime.now():%Y%m%d_%H%M%S}.csv")
         self.archivo_csv = open(ruta, "w", newline="", encoding="utf-8")
         self.escritor = csv.writer(self.archivo_csv, lineterminator="\n")
         cab = ["Fecha"] + [f"ID{i}_r{k}" for i in IDS_CSV for k in (1, 2, 3)]
@@ -481,6 +481,10 @@ class Puente:
                              args=(str(c.get("fuente", "")), c.get("params") or {})).start()
         elif cmd == "extractor":
             self.extractor(c.get("linea", ""))
+        elif cmd == "carpeta":
+            ruta = str(c.get("ruta", ""))
+            if ruta and os.path.isabs(ruta):
+                self.dir_registros = ruta
         elif cmd == "ping":
             self.enviar_estado()
 
@@ -537,7 +541,7 @@ def main():
                     help="carpeta con los CSV del ESP32 (si copiaste la SD al disco)")
     ap.add_argument("--registrar", action="store_true",
                     help="guardar cada sesion en un CSV (mismo formato que MATLAB)")
-    ap.add_argument("--carpeta-registros", default=os.path.join(base, "registros_puente"))
+    ap.add_argument("--carpeta-registros", default=os.path.join(base, "registros"))
     ap.add_argument("--auto", choices=list(CONDUCTORES), default=None,
                     help="conectar solo al iniciar (para pruebas sin Godot; con esto no se apaga solo)")
     a = ap.parse_args()

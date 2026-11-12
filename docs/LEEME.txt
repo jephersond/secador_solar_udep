@@ -1,0 +1,56 @@
+VISOR SECADOR SOLAR UDEP
+Proyectos IME - Grupo 5 - Universidad de Piura
+=====================================================
+
+QUE ES
+Programa para ver en 3D el secador solar: temperaturas de las bandejas, clima,
+graficas y control de los extractores. Lee registros guardados o datos en vivo
+desde el ESP32 por USB.
+
+QUE NECESITA EL PC (una sola vez)
+1. Windows 10 u 11 de 64 bits.
+2. Python 3 (https://www.python.org/downloads/). Al instalar, marcar
+   "Add Python to PATH".
+3. Abrir "Simbolo del sistema" (cmd) y escribir:
+       pip install pyserial
+4. Internet: solo para el clima real. El visor funciona sin internet.
+5. Para el modo en vivo: el ESP32 conectado por USB (si Windows no lo reconoce,
+   instalar el driver CP210x o CH340 segun la placa).
+
+CARPETA DEL VISOR (todo debe ir junto)
+   Visor_Secador.exe
+   puente_datos.py
+   conductor_serial.py
+   clima_udp.py
+   registros\          <- se crea sola la primera vez
+
+Se puede copiar la carpeta completa a otro PC o a un USB.
+Si falta algun .py, el visor abre pero muestra "Sin puente" (no conecta con el
+ESP32 ni trae el clima real).
+
+COMO USARLO
+- Ver un registro: icono de wifi (abajo) > "Registro de prueba" o
+  "Abrir otro registro" (acepta .csv y .txt; tambien se puede arrastrar el
+  archivo a la ventana).
+- Modo en vivo: conectar el ESP32 por USB > icono de wifi > "Buscar de nuevo"
+  > "Activar" en el ESP32. El primer dato puede tardar hasta 1 minuto.
+- Sin registro ni modo en vivo, los sensores muestran NaN y las bandejas salen
+  grises: es lo normal.
+- Extractores: icono de deslizadores (barra izquierda). Modos Apagado,
+  Encendido y Automatico. En Automatico se elige que temperatura decide
+  (promedio de bandejas, una bandeja o el ambiente) y los limites en grados.
+  Necesita el modo en vivo y el firmware del ESP32 con los comandos de
+  extractores. El ESP32 tiene siempre el control final.
+
+DONDE SE GUARDAN LOS DATOS
+Carpeta "registros", junto al .exe:
+   EnVivo_AAAAMMDD_HHMMSS.csv   sesiones grabadas en modo en vivo
+   (cualquier otro nombre)      copia de los registros que se abren
+Se puede cambiar la carpeta: icono de wifi > "Cambiar carpeta...".
+Para guardar datos de otra prueba, copiar los archivos de "registros".
+
+SI ALGO FALLA
+- "Sin puente": faltan los .py junto al .exe, o Python no esta instalado.
+- No aparece el ESP32: revisar el cable USB (que sea de datos), el driver y que
+  ningun otro programa (Arduino IDE, monitor serie) tenga abierto el puerto.
+- El ESP32 envia a 115200 baudios; no cambiarlo en Conexion.
